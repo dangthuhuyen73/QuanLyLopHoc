@@ -155,7 +155,7 @@ public class SinhVien extends JPanel {
         textField_1.setBounds(114, 124, 296, 30);
         panel_1.add(textField_1);
         
-        JLabel Lop_Label_1 = new JLabel("MÃ LỚP :");
+        JLabel Lop_Label_1 = new JLabel("MÃ MÔN :");
         Lop_Label_1.setFont(new Font("Times New Roman", Font.BOLD, 15));
         Lop_Label_1.setBounds(26, 181, 81, 29);
         panel_1.add(Lop_Label_1);
