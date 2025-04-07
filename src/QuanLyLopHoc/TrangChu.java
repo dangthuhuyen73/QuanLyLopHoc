@@ -29,6 +29,8 @@ public class TrangChu extends JFrame {
     public TrangChu() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 1000, 700);
+        //setExtendedState(JFrame.MAXIMIZED_BOTH); // Full màn hình
+        //setUndecorated(false); // Giữ thanh title bar
         setLocationRelativeTo(null);
         contentPane = new JPanel();
         contentPane.setBackground(new Color(0, 0, 121));
