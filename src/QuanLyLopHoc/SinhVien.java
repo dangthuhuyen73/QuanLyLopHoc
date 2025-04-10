@@ -4,10 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.text.SimpleDateFormat;
-import javax.swing.text.DateFormatter;
+import com.toedter.calendar.JDateChooser;
 
 public class SinhVien extends JPanel {
 
@@ -15,10 +12,10 @@ public class SinhVien extends JPanel {
     private JTextField HoTen_text;
     private JTextField Mssv_text;
     private JTextField Email_text;
-    private JFormattedTextField ngaySinhField;
-    private JTextField ThoiGian_text;    // Thời gian
-    private JTextField MaMon_text;  // Mã môn
-    private JTextField SoTin_text;  // Số tín
+    private JDateChooser NgaySinh;
+    private JTextField ThoiGian_text;
+    private JTextField MaMon_text;
+    private JTextField SoTin_text;
     private JComboBox<String> Lop_ComboBox;
     private JComboBox<String> GioiTinh_ComboBox;
     private JComboBox<String> MonHoc_ComboBox;
@@ -29,10 +26,10 @@ public class SinhVien extends JPanel {
         setLayout(null);
 
         JLabel lblNewLabel = new JLabel("SINH VIÊN");
-	    lblNewLabel.setFont(new Font("Times New Roman", Font.BOLD, 25));
-	    lblNewLabel.setForeground(new Color(255, 255, 255));
-	    lblNewLabel.setBounds(10, 39, 132, 43);
-	    add(lblNewLabel);
+        lblNewLabel.setFont(new Font("Times New Roman", Font.BOLD, 25));
+        lblNewLabel.setForeground(new Color(255, 255, 255));
+        lblNewLabel.setBounds(10, 39, 132, 43);
+        add(lblNewLabel);
 
         // Panel nhập thông tin sinh viên
         JPanel panel = new JPanel();
@@ -66,9 +63,9 @@ public class SinhVien extends JPanel {
         NgaySinh_label.setBounds(18, 250, 103, 29);
         panel.add(NgaySinh_label);
 
-        JLabel GiowiTinh_Label = new JLabel("GIỚI TÍNH :");
+        JLabel GiowiTinh_Label = new JLabel("GIỚI TÍNH:");
         GiowiTinh_Label.setFont(new Font("Times New Roman", Font.BOLD, 15));
-        GiowiTinh_Label.setBounds(243, 250, 94, 29);
+        GiowiTinh_Label.setBounds(256, 250, 94, 29);
         panel.add(GiowiTinh_Label);
 
         JLabel Email_Label = new JLabel("EMAIL :");
@@ -78,43 +75,44 @@ public class SinhVien extends JPanel {
 
         HoTen_text = new JTextField();
         HoTen_text.setFont(new Font("Times New Roman", Font.PLAIN, 15));
-        HoTen_text.setBounds(98, 72, 296, 30);
+        HoTen_text.setBounds(98, 72, 310, 30);
         panel.add(HoTen_text);
         HoTen_text.setColumns(10);
 
         Mssv_text = new JTextField();
         Mssv_text.setFont(new Font("Times New Roman", Font.PLAIN, 15));
         Mssv_text.setColumns(10);
-        Mssv_text.setBounds(98, 127, 296, 30);
+        Mssv_text.setBounds(98, 127, 310, 30);
         panel.add(Mssv_text);
 
         Email_text = new JTextField();
         Email_text.setFont(new Font("Times New Roman", Font.PLAIN, 15));
         Email_text.setColumns(10);
-        Email_text.setBounds(98, 314, 297, 30);
+        Email_text.setBounds(98, 314, 310, 30);
         panel.add(Email_text);
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        ngaySinhField = new JFormattedTextField(new DateFormatter(dateFormat));
-        ngaySinhField.setFont(new Font("Times New Roman", Font.PLAIN, 15));
-        ngaySinhField.setBounds(121, 249, 120, 30);
-        panel.add(ngaySinhField);
+        // Sửa vị trí JDateChooser
+        NgaySinh = new JDateChooser();
+        NgaySinh.setBounds(112, 249, 130, 30);  // Đặt đúng vị trí bên cạnh label NGÀY SINH
+        NgaySinh.setFont(new Font("Times New Roman", Font.PLAIN, 15));
+        NgaySinh.setDateFormatString("dd/MM/yyyy");
+        panel.add(NgaySinh);
 
         String[] items = {"", "Nam", "Nữ"};
         GioiTinh_ComboBox = new JComboBox<>(items);
         GioiTinh_ComboBox.setFont(new Font("Times New Roman", Font.PLAIN, 15));
-        GioiTinh_ComboBox.setBounds(339, 251, 55, 29);
+        GioiTinh_ComboBox.setBounds(343, 250, 65, 29);
         panel.add(GioiTinh_ComboBox);
 
         String[] items2 = {"", "D21CQVTHI-01", "D21CQVTVT-01", "D21CQVT-01N"};
         Lop_ComboBox = new JComboBox<>(items2);
         Lop_ComboBox.setFont(new Font("Times New Roman", Font.PLAIN, 15));
-        Lop_ComboBox.setBounds(98, 187, 296, 29);
+        Lop_ComboBox.setBounds(98, 187, 310, 29);
         panel.add(Lop_ComboBox);
 
         // Panel nhập thông tin khóa học
         JPanel panel_1 = new JPanel();
-        panel_1.setBounds(461, 84, 432, 448);
+        panel_1.setBounds(454, 85, 432, 448);
         add(panel_1);
         panel_1.setLayout(null);
 
@@ -172,19 +170,19 @@ public class SinhVien extends JPanel {
         MonHoc_ComboBox.addItemListener(e -> {
             String selectedSubject = (String) MonHoc_ComboBox.getSelectedItem();
             if ("Cảm Biến".equals(selectedSubject)) {
-                MaMon_text.setText("iot");         // Mã môn
-                SoTin_text.setText("3");           // Số tín
-                ThoiGian_text.setText("4/5-6-8");       // Thời gian
+                MaMon_text.setText("iot");
+                SoTin_text.setText("3");
+                ThoiGian_text.setText("4/5-6-8");
             } else if ("Java".equals(selectedSubject)) {
-                MaMon_text.setText("jv");          // Mã môn
-                SoTin_text.setText("2");           // Số tín
-                ThoiGian_text.setText("6/7-7/8");       // Thời gian
+                MaMon_text.setText("jv");
+                SoTin_text.setText("2");
+                ThoiGian_text.setText("6/7-7/8");
             } else if ("Android".equals(selectedSubject)) {
-                MaMon_text.setText("ad");          // Mã môn
-                SoTin_text.setText("3");           // Số tín
-                ThoiGian_text.setText("7/7-7/9");       // Thời gian
+                MaMon_text.setText("ad");
+                SoTin_text.setText("3");
+                ThoiGian_text.setText("7/7-7/9");
             } else {
-                MaMon_text.setText("");            // Xóa nếu không chọn
+                MaMon_text.setText("");
                 SoTin_text.setText("");
                 ThoiGian_text.setText("");
             }
@@ -198,27 +196,23 @@ public class SinhVien extends JPanel {
         add(Luu_button);
 
         Luu_button.addActionListener(e -> {
-            // Kiểm tra các trường thông tin sinh viên
+            // Kiểm tra các trường thông tin
             if (HoTen_text.getText().trim().isEmpty() ||
                 Mssv_text.getText().trim().isEmpty() ||
-                Lop_ComboBox.getSelectedIndex() == 0 || // "" được chọn
-                ngaySinhField.getText().trim().isEmpty() ||
-                GioiTinh_ComboBox.getSelectedIndex() == 0 || // "" được chọn
+                Lop_ComboBox.getSelectedIndex() == 0 ||
+                NgaySinh.getDate() == null ||  // Kiểm tra ngày sinh đúng cách
+                GioiTinh_ComboBox.getSelectedIndex() == 0 ||
                 Email_text.getText().trim().isEmpty() ||
-                // Kiểm tra các trường thông tin khóa học
-                MonHoc_ComboBox.getSelectedIndex() == 0 || // "" được chọn
-                MaMon_text.getText().trim().isEmpty() || // Mã môn
-                SoTin_text.getText().trim().isEmpty() || // Số tín
-                ThoiGian_text.getText().trim().isEmpty()) { // Thời gian
-
+                MonHoc_ComboBox.getSelectedIndex() == 0 ||
+                MaMon_text.getText().trim().isEmpty() ||
+                SoTin_text.getText().trim().isEmpty() ||
+                ThoiGian_text.getText().trim().isEmpty()) {
+                
                 JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ tất cả các thông tin!", "Lỗi",
                         JOptionPane.ERROR_MESSAGE);
             } else {
-                // Nếu tất cả các trường đã được điền, hiển thị thông báo thành công
                 JOptionPane.showMessageDialog(this, "Lưu thông tin thành công!", "Thành công",
                         JOptionPane.INFORMATION_MESSAGE);
-
-                // Ở đây bạn có thể thêm logic để lưu dữ liệu vào cơ sở dữ liệu hoặc file
             }
         });
 
@@ -227,15 +221,16 @@ public class SinhVien extends JPanel {
         xuat_button.setBackground(new Color(255, 215, 0));
         xuat_button.setFont(new Font("Times New Roman", Font.BOLD, 15));
         xuat_button.setBounds(572, 563, 120, 44);
+        xuat_button.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
         add(xuat_button);
 
         xuat_button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // Lấy dữ liệu từ các trường
+                
+            	String ngaySinh = NgaySinh.getDate() != null ? NgaySinh.getDate().toString() : "";
                 String hoTen = HoTen_text.getText();
                 String mssv = Mssv_text.getText();
                 String lop = Lop_ComboBox.getSelectedItem().toString();
-                String ngaySinh = ngaySinhField.getText();
                 String gioiTinh = (String) GioiTinh_ComboBox.getSelectedItem();
                 String email = Email_text.getText();
                 String monHoc = MonHoc_ComboBox.getSelectedItem().toString();
@@ -243,7 +238,6 @@ public class SinhVien extends JPanel {
                 String soTin = SoTin_text.getText();
                 String thoiGian = ThoiGian_text.getText();
 
-                // Mở frame ThongTinSinhVien và truyền dữ liệu
                 EventQueue.invokeLater(() -> {
                     ThongTinSinhVien frame = new ThongTinSinhVien(hoTen, mssv, lop, ngaySinh, gioiTinh, email, monHoc, maMon, soTin, thoiGian);
                     frame.setVisible(true);

@@ -2,23 +2,28 @@ package QuanLyLopHoc;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.text.DateFormatter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.util.Calendar;
 import java.util.Date;
 import javax.swing.border.LineBorder;
+import com.toedter.calendar.JDateChooser;
+import com.github.lgooddatepicker.components.TimePicker;
+import com.github.lgooddatepicker.components.TimePickerSettings;
 
 public class GiaoBaiTap extends JFrame {
 
     private static final long serialVersionUID = 1L;
     private JPanel contentPane;
     private JTextField TenGV_text;
-    private JFormattedTextField NgayNop;
     private JTextField TieuDe_Text;
     private JTextArea ND_textArea;
     private JComboBox<String> Mon_comboBox;
+    private JDateChooser NgayNop;
+    private TimePicker timePicker;
 
     // Constructor mặc định
     public GiaoBaiTap() {
@@ -38,7 +43,7 @@ public class GiaoBaiTap extends JFrame {
         setLocationRelativeTo(null);
 
         contentPane = new JPanel();
-        contentPane.setBackground(new Color(0, 0, 160));
+        contentPane.setBackground(new Color(0, 0, 121));
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         setContentPane(contentPane);
         contentPane.setLayout(null);
@@ -102,29 +107,47 @@ public class GiaoBaiTap extends JFrame {
         ND_textArea = new JTextArea();
         ND_textArea.setFont(new Font("Times New Roman", Font.BOLD, 15));
         JScrollPane scrollPane = new JScrollPane(ND_textArea); // Thêm JScrollPane để hỗ trợ cuộn
-        scrollPane.setBounds(25, 229, 832, 261);
+        scrollPane.setBounds(25, 229, 832, 244);
         contentPane.add(scrollPane);
+        //ND_textArea.setBounds(25, 229, 832, 244);
+        //contentPane.add(ND_textArea);
 
         JLabel lblHanNop = new JLabel("HẠN NỘP:");
         lblHanNop.setFont(new Font("Times New Roman", Font.BOLD, 15));
         lblHanNop.setForeground(new Color(255, 255, 255));
-        lblHanNop.setBounds(25, 515, 88, 28);
+        lblHanNop.setBounds(75, 501, 88, 28);
         contentPane.add(lblHanNop);
 
-        // Sử dụng JFormattedTextField với DateFormatter hỗ trợ cả ngày và giờ
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-        NgayNop = new JFormattedTextField(new DateFormatter(dateFormat));
-        NgayNop.setFont(new Font("Times New Roman", Font.BOLD, 15));
-        NgayNop.setBounds(123, 514, 342, 30);
-        NgayNop.setToolTipText("Nhập ngày và giờ theo định dạng dd/MM/yyyy HH:mm (ví dụ: 10/04/2025 14:30)");
+        // Sử dụng JDateChooser để chọn ngày
+        NgayNop = new JDateChooser();
+        NgayNop.setBounds(163, 501, 150, 30);
+        NgayNop.setFont(new Font("Times New Roman", Font.PLAIN, 15));
+        NgayNop.setDateFormatString("dd/MM/yyyy");
         contentPane.add(NgayNop);
+
+        // Hạn nộp - Giờ
+        JLabel lblHanNopGio = new JLabel("Giờ nộp:");
+        lblHanNopGio.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        lblHanNopGio.setForeground(new Color(255, 255, 255));
+        lblHanNopGio.setBounds(510, 499, 88, 30);
+        contentPane.add(lblHanNopGio);
+
+        TimePickerSettings timeSettings = new TimePickerSettings();
+        timeSettings.setDisplaySpinnerButtons(true);
+        timeSettings.setColor(TimePickerSettings.TimeArea.TimePickerTextDisabled, new Color(0, 51, 102));
+        timeSettings.setFormatForDisplayTime("hh:mm a"); // Hiển thị AM/PM trong TimePicker
+        timePicker = new TimePicker(timeSettings);
+        timePicker.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        timePicker.setBounds(608, 501, 150, 30);
+        //timePicker.setLayout(null);
+        contentPane.add(timePicker);
 
         JButton Giaobai_bnt = new JButton("GIAO BÀI");
         Giaobai_bnt.setForeground(Color.BLACK);
         Giaobai_bnt.setFont(new Font("Times New Roman", Font.BOLD, 15));
         Giaobai_bnt.setBorder(new LineBorder(Color.WHITE, 1));
-        Giaobai_bnt.setBackground(new Color(255, 165, 80));
-        Giaobai_bnt.setBounds(653, 540, 162, 42);
+        Giaobai_bnt.setBackground(new Color(0, 221, 55));
+        Giaobai_bnt.setBounds(356, 562, 162, 42);
         contentPane.add(Giaobai_bnt);
 
         // Thêm sự kiện cho nút GIAO BÀI
@@ -135,7 +158,8 @@ public class GiaoBaiTap extends JFrame {
                 String monHoc = (String) Mon_comboBox.getSelectedItem();
                 String tieuDe = TieuDe_Text.getText();
                 String noiDung = ND_textArea.getText();
-                Object dateValue = NgayNop.getValue();
+                Date selectedDate = NgayNop.getDate();
+                LocalTime selectedTime = timePicker.getTime(); // Lấy thời gian từ TimePicker
 
                 // Kiểm tra xem thông tin có đầy đủ không
                 if (tenGV.isEmpty() || monHoc == null || monHoc.isEmpty()) {
@@ -162,18 +186,40 @@ public class GiaoBaiTap extends JFrame {
                     return;
                 }
 
-                if (dateValue == null) {
+                if (selectedDate == null) {
                     JOptionPane.showMessageDialog(GiaoBaiTap.this,
-                            "Vui lòng nhập ngày và giờ hạn nộp hợp lệ (dd/MM/yyyy HH:mm)!",
+                            "Vui lòng chọn ngày hạn nộp hợp lệ!",
                             "Cảnh báo",
                             JOptionPane.WARNING_MESSAGE);
                     return;
                 }
 
+                if (selectedTime == null) {
+                    JOptionPane.showMessageDialog(GiaoBaiTap.this,
+                            "Vui lòng chọn giờ hạn nộp hợp lệ!",
+                            "Cảnh báo",
+                            JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
+                // Kết hợp ngày và giờ thành một đối tượng Date
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(selectedDate);
+
+                // Lấy giờ và phút từ LocalTime
+                int hour = selectedTime.getHour();
+                int minute = selectedTime.getMinute();
+
+                calendar.set(Calendar.HOUR_OF_DAY, hour);
+                calendar.set(Calendar.MINUTE, minute);
+                calendar.set(Calendar.SECOND, 0);
+                calendar.set(Calendar.MILLISECOND, 0);
+
+                Date hanNopDate = calendar.getTime();
+
                 // Chuyển đổi giá trị hạn nộp thành chuỗi
-                Date date = (Date) dateValue;
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-                String hanNop = sdf.format(date);
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm a"); // Đồng bộ với định dạng của TimePicker
+                String hanNop = sdf.format(hanNopDate);
 
                 // Hiển thị thông báo giao bài thành công
                 String thongBao = "📌 Giao bài thành công!\n\n"
