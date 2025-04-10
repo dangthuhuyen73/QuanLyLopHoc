@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import javax.swing.border.LineBorder;
@@ -25,6 +26,8 @@ public class GiaoBaiTap extends JFrame {
     private JDateChooser NgayNop;
     private TimePicker timePicker;
 
+ // Danh sách lưu bài tập
+    public static ArrayList<BaiTapInfo> danhSachBaiTap = new ArrayList<>();
     // Constructor mặc định
     public GiaoBaiTap() {
         initialize();
@@ -215,25 +218,24 @@ public class GiaoBaiTap extends JFrame {
                 calendar.set(Calendar.SECOND, 0);
                 calendar.set(Calendar.MILLISECOND, 0);
 
-                Date hanNopDate = calendar.getTime();
+             // Lưu bài tập vào danh sách
+                Date hanNop = calendar.getTime();
+                BaiTapInfo baiTap = new BaiTapInfo(tieuDe, noiDung, hanNop, tenGV, monHoc);
+                danhSachBaiTap.add(baiTap);
 
-                // Chuyển đổi giá trị hạn nộp thành chuỗi
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm a"); // Đồng bộ với định dạng của TimePicker
-                String hanNop = sdf.format(hanNopDate);
-
-                // Hiển thị thông báo giao bài thành công
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
+                String hanNopStr = sdf.format(hanNop);
                 String thongBao = "📌 Giao bài thành công!\n\n"
                         + "Tiêu đề: " + tieuDe + "\n"
                         + "Giảng viên: " + tenGV + "\n"
                         + "Môn học: " + monHoc + "\n"
-                        + "Hạn nộp: " + hanNop;
+                        + "Hạn nộp: " + hanNopStr;
 
                 JOptionPane.showMessageDialog(GiaoBaiTap.this, thongBao, "Thành công", JOptionPane.INFORMATION_MESSAGE);
-
-                // Ở đây bạn có thể thêm logic để lưu dữ liệu (ví dụ: vào cơ sở dữ liệu hoặc file)
             }
         });
     }
+    
 
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {

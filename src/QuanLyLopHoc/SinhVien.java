@@ -5,6 +5,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import com.toedter.calendar.JDateChooser;
+import java.text.SimpleDateFormat;
+
 
 public class SinhVien extends JPanel {
 
@@ -91,9 +93,8 @@ public class SinhVien extends JPanel {
         Email_text.setBounds(98, 314, 310, 30);
         panel.add(Email_text);
 
-        // Sửa vị trí JDateChooser
         NgaySinh = new JDateChooser();
-        NgaySinh.setBounds(112, 249, 130, 30);  // Đặt đúng vị trí bên cạnh label NGÀY SINH
+        NgaySinh.setBounds(112, 249, 130, 30);
         NgaySinh.setFont(new Font("Times New Roman", Font.PLAIN, 15));
         NgaySinh.setDateFormatString("dd/MM/yyyy");
         panel.add(NgaySinh);
@@ -166,7 +167,6 @@ public class SinhVien extends JPanel {
         SoTin_Label_1_1.setBounds(24, 205, 103, 29);
         panel_1.add(SoTin_Label_1_1);
 
-        // Xử lý khi chọn môn học
         MonHoc_ComboBox.addItemListener(e -> {
             String selectedSubject = (String) MonHoc_ComboBox.getSelectedItem();
             if ("Cảm Biến".equals(selectedSubject)) {
@@ -196,11 +196,10 @@ public class SinhVien extends JPanel {
         add(Luu_button);
 
         Luu_button.addActionListener(e -> {
-            // Kiểm tra các trường thông tin
             if (HoTen_text.getText().trim().isEmpty() ||
                 Mssv_text.getText().trim().isEmpty() ||
                 Lop_ComboBox.getSelectedIndex() == 0 ||
-                NgaySinh.getDate() == null ||  // Kiểm tra ngày sinh đúng cách
+                NgaySinh.getDate() == null ||
                 GioiTinh_ComboBox.getSelectedIndex() == 0 ||
                 Email_text.getText().trim().isEmpty() ||
                 MonHoc_ComboBox.getSelectedIndex() == 0 ||
@@ -226,22 +225,42 @@ public class SinhVien extends JPanel {
 
         xuat_button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                
-            	String ngaySinh = NgaySinh.getDate() != null ? NgaySinh.getDate().toString() : "";
-                String hoTen = HoTen_text.getText();
-                String mssv = Mssv_text.getText();
-                String lop = Lop_ComboBox.getSelectedItem().toString();
-                String gioiTinh = (String) GioiTinh_ComboBox.getSelectedItem();
-                String email = Email_text.getText();
-                String monHoc = MonHoc_ComboBox.getSelectedItem().toString();
-                String maMon = MaMon_text.getText();
-                String soTin = SoTin_text.getText();
-                String thoiGian = ThoiGian_text.getText();
+                // Kiểm tra các trường bắt buộc
+                if (HoTen_text.getText().trim().isEmpty() ||
+                    Mssv_text.getText().trim().isEmpty() ||
+                    Lop_ComboBox.getSelectedIndex() == 0 ||
+                    NgaySinh.getDate() == null ||
+                    GioiTinh_ComboBox.getSelectedIndex() == 0 ||
+                    Email_text.getText().trim().isEmpty() ||
+                    MonHoc_ComboBox.getSelectedIndex() == 0 ||
+                    MaMon_text.getText().trim().isEmpty() ||
+                    SoTin_text.getText().trim().isEmpty() ||
+                    ThoiGian_text.getText().trim().isEmpty()) {
+                    
+                    JOptionPane.showMessageDialog(SinhVien.this, "Vui lòng điền đầy đủ tất cả các thông tin!", "Lỗi",
+                            JOptionPane.ERROR_MESSAGE);
+                } else {
+                    EventQueue.invokeLater(() -> {
+                        // Lấy giá trị trực tiếp trong lambda
+                        String hoTen = HoTen_text.getText();
+                        String mssv = Mssv_text.getText();
+                        String lop = Lop_ComboBox.getSelectedItem().toString();
+                        String gioiTinh = (String) GioiTinh_ComboBox.getSelectedItem();
+                        String email = Email_text.getText();
+                        String monHoc = MonHoc_ComboBox.getSelectedItem().toString();
+                        String maMon = MaMon_text.getText();
+                        String soTin = SoTin_text.getText();
+                        String thoiGian = ThoiGian_text.getText();
+                        String ngaySinh = "";
+                        if (NgaySinh.getDate() != null) {
+                            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                            ngaySinh = sdf.format(NgaySinh.getDate());
+                        }
 
-                EventQueue.invokeLater(() -> {
-                    ThongTinSinhVien frame = new ThongTinSinhVien(hoTen, mssv, lop, ngaySinh, gioiTinh, email, monHoc, maMon, soTin, thoiGian);
-                    frame.setVisible(true);
-                });
+                        ThongTinSinhVien frame = new ThongTinSinhVien(hoTen, mssv, lop, ngaySinh, gioiTinh, email, monHoc, maMon, soTin, thoiGian);
+                        frame.setVisible(true);
+                    });
+                }
             }
         });
     }

@@ -4,13 +4,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import com.github.lgooddatepicker.components.TimePicker;
 import com.github.lgooddatepicker.components.TimePickerSettings;
 import com.toedter.calendar.JDateChooser;
-
 import java.io.File;
+
 
 public class BaiTap extends JFrame {
 
@@ -21,6 +22,7 @@ public class BaiTap extends JFrame {
     private JLabel LinkNop; // Label để hiển thị tên file đã chọn
     private JDateChooser NgayNop;
     private TimePicker timePicker;
+    private JComboBox<String> Mon_comboBox;
 
     public BaiTap() {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -66,12 +68,11 @@ public class BaiTap extends JFrame {
         lblMonHoc.setBounds(23, 80, 114, 30);
         contentPane.add(lblMonHoc);
         
-        JComboBox<String> Mon_comboBox = new JComboBox<String>();
+        Mon_comboBox = new JComboBox<>(new String[]{"", "Cảm Biến", "Java", "Android"});
         Mon_comboBox.setFont(new Font("Times New Roman", Font.PLAIN, 15));
-        Mon_comboBox.setEnabled(false);
         Mon_comboBox.setBounds(113, 79, 300, 30);
         contentPane.add(Mon_comboBox);
-        
+         
         JLabel lblTieuDe = new JLabel("TIÊU ĐỀ:");
         lblTieuDe.setForeground(Color.WHITE);
         lblTieuDe.setFont(new Font("Times New Roman", Font.BOLD, 15));
@@ -87,13 +88,42 @@ public class BaiTap extends JFrame {
      // Nội dung bài tập (TextArea)
         JTextArea noiDungBaiTap = new JTextArea();
         noiDungBaiTap.setFont(new Font("Times New Roman", Font.PLAIN, 15));
-        /*JScrollPane scrollPane = new JScrollPane(noiDungBaiTap); // Thêm JScrollPane để hỗ trợ cuộn
-        scrollPane.setBounds(23, 216, 834, 248);
-        contentPane.add(scrollPane);*/
         noiDungBaiTap.setBounds(23, 216, 834, 248); // Điều chỉnh kích thước và vị trí cho phù hợp
         noiDungBaiTap.setEditable(false);
         noiDungBaiTap.setBackground(Color.WHITE); // Thêm màu nền cho dễ đọc
         contentPane.add(noiDungBaiTap);
+        
+        Mon_comboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectedMon = (String) Mon_comboBox.getSelectedItem();
+                if (selectedMon != null && !selectedMon.isEmpty()) {
+                    for (BaiTapInfo baiTap : GiaoBaiTap.danhSachBaiTap) {
+                        if (baiTap.getMonHoc().equals(selectedMon)) {
+                            TieuDe_text.setText(baiTap.getTieuDe());
+                            noiDungBaiTap.setText(baiTap.getNoiDung());
+                            GiangVien.setText(baiTap.getTenGV());
+                            NgayNop.setDate(baiTap.getHanNop());
+                            SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
+                            timePicker.setText(sdf.format(baiTap.getHanNop()));
+                            return;
+                        }
+                    }
+                    // Nếu không tìm thấy bài tập, xóa các trường
+                    TieuDe_text.setText("");
+                    noiDungBaiTap.setText("");
+                    GiangVien.setText("");
+                    NgayNop.setDate(null);
+                    timePicker.setText("");
+                } else {
+                    TieuDe_text.setText("");
+                    noiDungBaiTap.setText("");
+                    GiangVien.setText("");
+                    NgayNop.setDate(null);
+                    timePicker.setText("");
+                }
+            }
+        });
         
         JButton btnChonTep = new JButton("Chọn tệp");
         btnChonTep.setFont(new Font("Times New Roman", Font.BOLD, 15));
