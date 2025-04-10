@@ -5,6 +5,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
+
 
 public class BaiTap extends JFrame {
 
@@ -13,20 +15,15 @@ public class BaiTap extends JFrame {
     private JTextField textField;
 
     public BaiTap() {
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Sửa từ EXIT thành DISPOSE để không thoát toàn bộ chương trình
-        setBounds(100, 100, 895, 652); // Giữ kích thước đồng bộ với ThongTinSinhVien
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
+        setBounds(100, 100, 895, 652); 
+        setLocationRelativeTo(null);
+        
         contentPane = new JPanel();
         contentPane.setBackground(new Color(0, 0, 121));
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         contentPane.setLayout(null);
         setContentPane(contentPane);
-
-        // Tiêu đề
-        JLabel BaiTap = new JLabel("BÀI TẬP");
-        BaiTap.setForeground(Color.WHITE);
-        BaiTap.setFont(new Font("Times New Roman", Font.BOLD, 25));
-        BaiTap.setBounds(364, 28, 128, 37);
-        contentPane.add(BaiTap);
 
         // Nội dung bài tập (TextArea)
         JTextArea noiDungBaiTap = new JTextArea();
@@ -38,20 +35,24 @@ public class BaiTap extends JFrame {
         contentPane.add(noiDungBaiTap);
 
         // Nút Nộp bài
-        JButton nopBaiButton = new JButton("NỘP BÀI");
-        nopBaiButton.setBounds(188, 495, 120, 40);
-        nopBaiButton.setFont(new Font("Times New Roman", Font.BOLD, 15));
-        nopBaiButton.setBackground(new Color(238, 119, 0));
-        nopBaiButton.setForeground(new Color(0, 0, 0)); // Thêm màu chữ cho đồng bộ
-        contentPane.add(nopBaiButton);
+        JButton NộpBaiButton = new JButton("NỘP BÀI");
+        NộpBaiButton.setBounds(188, 473, 162, 42);
+        NộpBaiButton.setFont(new Font("Times New Roman", Font.BOLD, 15));
+        NộpBaiButton.setBackground(new Color(255, 165, 80));
+        NộpBaiButton.setForeground(new Color(0, 0, 0)); // Thêm màu chữ cho đồng bộ
+        NộpBaiButton.setBorder(new LineBorder(Color.WHITE, 1));
+        contentPane.add(NộpBaiButton);
 
         // Nút Hủy
-        JButton huyButton = new JButton("HỦY NỘP BÀI ");
-        huyButton.setBounds(444, 495, 139, 40);
-        huyButton.setFont(new Font("Times New Roman", Font.BOLD, 15));
-        huyButton.setBackground(new Color(238, 119, 0));
-        huyButton.setForeground(new Color(0, 0, 0)); // Thêm màu chữ cho đồng bộ
-        contentPane.add(huyButton);
+        JButton HuyBaiButton = new JButton("HỦY NỘP BÀI");
+        HuyBaiButton.setBounds(558, 472, 162, 44);
+        HuyBaiButton.setFont(new Font("Times New Roman", Font.BOLD, 15));
+        HuyBaiButton.setBackground(new Color(255, 53, 53)); 
+        HuyBaiButton.setForeground(new Color(0, 0, 0)); // Chữ màu đen
+        HuyBaiButton.setBorder(new LineBorder(Color.WHITE, 1)); // Viền trắng
+        contentPane.add(HuyBaiButton);
+
+        contentPane.add(HuyBaiButton);
         
         textField = new JTextField();
         textField.setBounds(188, 375, 660, 40);
@@ -63,9 +64,21 @@ public class BaiTap extends JFrame {
         lblNewLabel.setForeground(new Color(255, 255, 255));
         lblNewLabel.setBounds(54, 375, 124, 40);
         contentPane.add(lblNewLabel);
+        
+        JPanel panel = new JPanel();
+        panel.setLayout(null);
+        panel.setBackground(new Color(255, 204, 0));
+        panel.setBounds(0, 0, 881, 57);
+        contentPane.add(panel);
+        
+        JLabel lblBiTp = new JLabel("BÀI TẬP");
+        lblBiTp.setForeground(Color.BLACK);
+        lblBiTp.setFont(new Font("Times New Roman", Font.BOLD, 25));
+        lblBiTp.setBounds(393, 11, 133, 37);
+        panel.add(lblBiTp);
 
         // Xử lý sự kiện cho nút Nộp bài
-        nopBaiButton.addActionListener(new ActionListener() {
+        NộpBaiButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JOptionPane.showMessageDialog(contentPane, 
@@ -77,7 +90,7 @@ public class BaiTap extends JFrame {
         });
 
         // Xử lý sự kiện cho nút Hủy
-        huyButton.addActionListener(new ActionListener() {
+        HuyBaiButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int confirm = JOptionPane.showConfirmDialog(contentPane, 
