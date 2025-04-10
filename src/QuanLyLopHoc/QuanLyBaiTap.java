@@ -70,8 +70,11 @@ public class QuanLyBaiTap extends JPanel {
 		JList DanhSach_List = new JList();
 		DanhSach_List.setBounds(28, 151, 841, 381);
 		add(DanhSach_List);
+		
+		JLabel lblNewLabel_1 = new JLabel("Môn Học :");
+		lblNewLabel_1.setFont(new Font("Times New Roman", Font.BOLD, 15));
+		lblNewLabel_1.setForeground(new Color(255, 255, 255));
+		lblNewLabel_1.setBounds(68, 73, 80, 34);
+		add(lblNewLabel_1);
 	}
-
-	
-	
 }
