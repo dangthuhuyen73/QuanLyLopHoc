@@ -15,6 +15,7 @@ public class QuanLyGiangVien extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	private JTextField textField;
+	private JTable table;
 	
 
 	public QuanLyGiangVien() {
@@ -34,7 +35,7 @@ public class QuanLyGiangVien extends JPanel {
 		btnAdd.setFont(new Font("Times New Roman", Font.BOLD, 14));
 		btnAdd.setBackground(new Color(255, 204, 0));
 		btnAdd.setForeground(Color.BLACK);
-		btnAdd.setBounds(627, 165, 100, 30);
+		btnAdd.setBounds(631, 165, 100, 30);
 		btnAdd.setBorder(new LineBorder(Color.WHITE, 1));
 		add(btnAdd);
 
@@ -84,9 +85,9 @@ public class QuanLyGiangVien extends JPanel {
         lblNewLabel_1.setBounds(140, 75, 117, 40);
         add(lblNewLabel_1);
         
-        JList list = new JList();
-        list.setBounds(24, 217, 849, 365);
-        add(list);
+        table = new JTable();
+        table.setBounds(31, 218, 842, 365);
+        add(table);
 
 		
 	}

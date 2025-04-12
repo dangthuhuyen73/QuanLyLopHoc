@@ -30,7 +30,7 @@ public class SinhVien extends JPanel {
         JLabel lblNewLabel = new JLabel("SINH VIÊN");
         lblNewLabel.setFont(new Font("Times New Roman", Font.BOLD, 25));
         lblNewLabel.setForeground(new Color(255, 255, 255));
-        lblNewLabel.setBounds(10, 39, 132, 43);
+        lblNewLabel.setBounds(10, 29, 132, 43);
         add(lblNewLabel);
 
         // Panel nhập thông tin sinh viên

@@ -24,7 +24,7 @@ public class GiangVien extends JPanel {
         JLabel lblNewLabel = new JLabel("GIẢNG VIÊN");
         lblNewLabel.setFont(new Font("Times New Roman", Font.BOLD, 25));
         lblNewLabel.setForeground(new Color(255, 255, 255));
-        lblNewLabel.setBounds(10, 39, 219, 43);
+        lblNewLabel.setBounds(12, 28, 219, 43);
         add(lblNewLabel);
 
         JPanel panel = new JPanel();
