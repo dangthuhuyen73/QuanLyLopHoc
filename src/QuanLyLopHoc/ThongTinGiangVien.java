@@ -6,6 +6,13 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.regex.Pattern;
+
 
 public class ThongTinGiangVien extends JFrame {
 
@@ -20,6 +27,16 @@ public class ThongTinGiangVien extends JFrame {
     private boolean isEditing = false;
     private JButton btnSua;
     private JComboBox<String> Mon_ComboBox;
+    private String originalMaGV; // Lưu mã GV ban đầu để xóa bản ghi cũ
+
+ // Thông tin kết nối database
+ 	private static final String DB_URL = "jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=require&pgbouncer=true";
+ 	private static final String DB_USERNAME = "postgres.vpehkzjmzpcskfzjjyql";
+ 	private static final String DB_PASSWORD = "MinhThuong0808";
+
+ 	// Regex cho email và số điện thoại
+ 	private static final Pattern EMAIL_PATTERN = Pattern.compile("^[a-zA-Z0-9]+@ptithcm\\.edu\\.vn$");
+ 	private static final Pattern PHONE_PATTERN = Pattern.compile("^0\\d{9}$");
 
     public ThongTinGiangVien() {
         initialize();
@@ -33,6 +50,7 @@ public class ThongTinGiangVien extends JFrame {
         SoDienThoai_text1.setText(soDienThoai);
         Mon_ComboBox.setSelectedItem(monGiangDay);
         MaMon_text1.setText(maMon);
+        originalMaGV = maGV; // Lưu mã GV ban đầu
     }
 
     private void initialize() {
@@ -177,35 +195,114 @@ public class ThongTinGiangVien extends JFrame {
         ThongTinGiangVienPanel.add(btnSua);
 
         btnSua.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if (!isEditing) {
-                    btnSua.setText("LƯU");
-                    btnSua.setBackground(new Color(255, 53, 53)); // Màu đỏ
-                    btnSua.setForeground(Color.WHITE); // Chữ màu trắng (sửa lỗi)
-                    btnSua.setBorder(new LineBorder(Color.WHITE, 1)); // Viền trắng
-                    setFieldsEditable(true);
-                    isEditing = true;
-                } else {
-                    if (checkFieldsFilled()) {
-                        btnSua.setText("SỬA");
-                        btnSua.setBackground(new Color(50, 150, 255)); // Màu xanh sáng
-                        btnSua.setForeground(Color.WHITE); // Chữ màu trắng (sửa lỗi)
-                        btnSua.setBorder(new LineBorder(Color.WHITE, 1)); // Viền trắng
-                        setFieldsEditable(false);
-                        isEditing = false;
-                        JOptionPane.showMessageDialog(ThongTinGiangVien.this,
-                            "Thông tin đã được sửa thành công!",
-                            "Thành công",
-                            JOptionPane.INFORMATION_MESSAGE);
-                    } else {
-                        JOptionPane.showMessageDialog(ThongTinGiangVien.this,
-                            "Vui lòng điền đầy đủ thông tin!",
-                            "Cảnh báo",
-                            JOptionPane.WARNING_MESSAGE);
-                    }
-                }
-            }
-        });
+			public void actionPerformed(ActionEvent e) {
+				if (!isEditing) {
+					// Chuyển sang chế độ chỉnh sửa
+					btnSua.setText("LƯU");
+					btnSua.setBackground(new Color(255, 53, 53));
+					btnSua.setForeground(new Color(0, 0, 0));
+					btnSua.setBorder(new LineBorder(Color.WHITE, 1));
+					setFieldsEditable(true);
+					isEditing = true;
+				} else {
+					// Lưu thông tin vào database
+					if (!checkFieldsFilled()) {
+						JOptionPane.showMessageDialog(ThongTinGiangVien.this, "Vui lòng điền đầy đủ thông tin!",
+								"Cảnh báo", JOptionPane.WARNING_MESSAGE);
+						return;
+					}
+
+					String hoTen = HoTen_text1.getText().trim();
+					String maGV = MaGV_text1.getText().trim();
+					String email = Email_text1.getText().trim();
+					String soDienThoai = SoDienThoai_text1.getText().trim();
+					String monGiangDay = (String) Mon_ComboBox.getSelectedItem();
+					String maMon = MaMon_text1.getText().trim();
+
+					// Kiểm tra định dạng email
+					if (!EMAIL_PATTERN.matcher(email).matches()) {
+						JOptionPane.showMessageDialog(ThongTinGiangVien.this,
+								"Email phải có định dạng: [chữ/số]@ptithcm.edu.vn!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+						return;
+					}
+
+					// Kiểm tra định dạng số điện thoại
+					if (!PHONE_PATTERN.matcher(soDienThoai).matches()) {
+						JOptionPane.showMessageDialog(ThongTinGiangVien.this,
+								"Số điện thoại phải có 10 chữ số và bắt đầu bằng 0!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+						return;
+					}
+
+					// Lưu vào database
+					Connection conn = null;
+					PreparedStatement pstmt = null;
+					ResultSet rs = null;
+					try {
+						conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+
+						// Kiểm tra mã GV mới nếu khác mã GV cũ
+						if (!maGV.equals(originalMaGV)) {
+							String checkSql = "SELECT ma_gv FROM giang_vien WHERE ma_gv = ?";
+							pstmt = conn.prepareStatement(checkSql);
+							pstmt.setString(1, maGV);
+							rs = pstmt.executeQuery();
+							if (rs.next()) {
+								JOptionPane.showMessageDialog(ThongTinGiangVien.this,
+										"Mã giảng viên '" + maGV + "' đã tồn tại trong database!", "Lỗi",
+										JOptionPane.ERROR_MESSAGE);
+								return;
+							}
+							rs.close();
+							pstmt.close();
+						}
+
+						// Xóa bản ghi cũ
+						String deleteSql = "DELETE FROM giang_vien WHERE ma_gv = ?";
+						pstmt = conn.prepareStatement(deleteSql);
+						pstmt.setString(1, originalMaGV);
+						pstmt.executeUpdate();
+						pstmt.close();
+
+						// Chèn bản ghi mới
+						String insertSql = "INSERT INTO giang_vien (ho_ten, ma_gv, email, so_dien_thoai, mon_giang_day, ma_mon) "
+								+ "VALUES (?, ?, ?, ?, ?, ?)";
+						pstmt = conn.prepareStatement(insertSql);
+						pstmt.setString(1, hoTen);
+						pstmt.setString(2, maGV);
+						pstmt.setString(3, email);
+						pstmt.setString(4, soDienThoai);
+						pstmt.setString(5, monGiangDay);
+						pstmt.setString(6, maMon);
+
+						int rowsAffected = pstmt.executeUpdate();
+						if (rowsAffected > 0) {
+							JOptionPane.showMessageDialog(ThongTinGiangVien.this, "Cập nhật thông tin thành công!",
+									"Thành công", JOptionPane.INFORMATION_MESSAGE);
+							btnSua.setText("SỬA");
+							btnSua.setBackground(new Color(50, 150, 255));
+							setFieldsEditable(false);
+							isEditing = false;
+							originalMaGV = maGV; // Cập nhật mã GV ban đầu
+						}
+					} catch (SQLException ex) {
+						JOptionPane.showMessageDialog(ThongTinGiangVien.this,
+								"Lỗi khi cập nhật database: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+						ex.printStackTrace();
+					} finally {
+						try {
+							if (rs != null)
+								rs.close();
+							if (pstmt != null)
+								pstmt.close();
+							if (conn != null)
+								conn.close();
+						} catch (SQLException ex) {
+							ex.printStackTrace();
+						}
+					}
+				}
+			}
+		});
 
         JButton btnChamDiem = new JButton("CHẤM ĐIỂM");
         btnChamDiem.setBackground(new Color(255, 140, 0));
@@ -213,6 +310,18 @@ public class ThongTinGiangVien extends JFrame {
         btnChamDiem.setBounds(286, 514, 137, 44);
         btnChamDiem.setBorder(new LineBorder(Color.WHITE, 1));
         ThongTinGiangVienPanel.add(btnChamDiem);
+        btnChamDiem.addActionListener(e -> {
+            String monGiangDay = (String) Mon_ComboBox.getSelectedItem();
+            if (monGiangDay != null && !monGiangDay.isEmpty()) {
+            	ChamDiem ChamDiem = new ChamDiem(monGiangDay);
+            	ChamDiem.setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(ThongTinGiangVien.this,
+                    "Vui lòng chọn môn giảng dạy!",
+                    "Cảnh báo",
+                    JOptionPane.WARNING_MESSAGE);
+            }
+        });
 
         JButton btnGiaoBai = new JButton("GIAO BÀI");
         btnGiaoBai.setBackground(new Color(255, 215, 0));
@@ -221,18 +330,11 @@ public class ThongTinGiangVien extends JFrame {
         btnGiaoBai.setBorder(new LineBorder(Color.WHITE, 1));
         ThongTinGiangVienPanel.add(btnGiaoBai);
         btnGiaoBai.addActionListener(e -> {
-            String hoTen = HoTen_text1.getText();
-            String monGiangDay = (String) Mon_ComboBox.getSelectedItem();
-            if (monGiangDay != null && !monGiangDay.isEmpty()) {
-                GiaoBaiTap thongTin = new GiaoBaiTap(hoTen, monGiangDay);
-                thongTin.setVisible(true);
-            } else {
-                JOptionPane.showMessageDialog(ThongTinGiangVien.this,
-                    "Vui lòng chọn môn giảng dạy!",
-                    "Cảnh báo",
-                    JOptionPane.WARNING_MESSAGE);
-            }
-        });
+			String hoTen = HoTen_text1.getText();
+			String monGiangDay = (String) Mon_ComboBox.getSelectedItem();
+			GiaoBaiTap thongTin = new GiaoBaiTap(hoTen, monGiangDay);
+			thongTin.setVisible(true);
+		});
 
         JButton btnDiemDanh = new JButton("ĐIỂM DANH");
         btnDiemDanh.setBackground(new Color(255, 165, 80));
