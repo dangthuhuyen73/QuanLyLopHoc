@@ -22,7 +22,7 @@ public class QuanLyLopHoc extends JPanel {
         JLabel lblNewLabel = new JLabel("QUẢN LÝ LỚP HỌC");
         lblNewLabel.setFont(new Font("Times New Roman", Font.BOLD, 25));
         lblNewLabel.setForeground(new Color(255, 255, 255));
-        lblNewLabel.setBounds(334, 11, 261, 40);
+        lblNewLabel.setBounds(334, 10, 253, 40);
         add(lblNewLabel);
 
         // Tạo JPopupMenu cho nút Quản Lý
@@ -42,7 +42,7 @@ public class QuanLyLopHoc extends JPanel {
         Lop_bnt.setFont(new Font("Times New Roman", Font.BOLD, 15));
         Lop_bnt.setBackground(new Color(255, 215, 0));
         Lop_bnt.setForeground(Color.BLACK);
-        Lop_bnt.setBounds(72, 61, 187, 40);
+        Lop_bnt.setBounds(51, 61, 187, 40);
         add(Lop_bnt);
 
         // Tạo JPopupMenu cho nút Danh Sách Môn Học
@@ -62,15 +62,33 @@ public class QuanLyLopHoc extends JPanel {
         Mon_bnt.setFont(new Font("Times New Roman", Font.BOLD, 14));
         Mon_bnt.setBackground(new Color(255, 215, 0));
         Mon_bnt.setForeground(Color.BLACK);
-        Mon_bnt.setBounds(362, 61, 187, 40);
+        Mon_bnt.setBounds(334, 61, 187, 40);
         add(Mon_bnt);
+        //danh sách điểm danh
+        JPopupMenu subjectsMenu1 = new JPopupMenu("Danh Sách Môn Học");
+        subjectsMenu1.setFont(new Font("Times New Roman", Font.BOLD, 15));
+        subjectsMenu1.setBackground(new Color(255, 204, 0));
+        subjectsMenu1.setForeground(Color.BLACK);
+        JMenuItem DiemDanh1 = new JMenuItem("Toán Cao Cấp");
+        JMenuItem DiemDanh2 = new JMenuItem("Lập Trình Java");
+        JMenuItem DiemDanh3 = new JMenuItem("Cơ Sở Dữ Liệu");
+        subjectsMenu1.add(DiemDanh1);
+        subjectsMenu1.add(DiemDanh2);
+        subjectsMenu1.add(DiemDanh3);
+        
+        JButton diemDanh_btn = new JButton("Danh Sách Điểm Danh");
+        diemDanh_btn.setForeground(Color.BLACK);
+        diemDanh_btn.setFont(new Font("Times New Roman", Font.BOLD, 14));
+        diemDanh_btn.setBackground(new Color(255, 215, 0));
+        diemDanh_btn.setBounds(613, 61, 187, 40);
+        add(diemDanh_btn);
 
         // Nút Xuất Excel
         JButton btnDetails = new JButton("Xuất Excel");
         btnDetails.setFont(new Font("Times New Roman", Font.BOLD, 14));
         btnDetails.setBackground(new Color(0, 204, 0));
         btnDetails.setForeground(Color.WHITE);
-        btnDetails.setBounds(679, 64, 150, 40);
+        btnDetails.setBounds(714, 125, 150, 31);
         add(btnDetails);
 
         // Hàm xử lý màu khi nhấn nút
@@ -99,6 +117,8 @@ public class QuanLyLopHoc extends JPanel {
                     manageLopMenu.show(Lop_bnt, 0, Lop_bnt.getHeight());
                 } else if (clickedButton == Mon_bnt) {
                     subjectsMenu.show(Mon_bnt, 0, Mon_bnt.getHeight());
+                }else if (clickedButton == diemDanh_btn) {
+                    subjectsMenu1.show(diemDanh_btn, 0, diemDanh_btn.getHeight());
                 }
             }
         };
@@ -106,6 +126,7 @@ public class QuanLyLopHoc extends JPanel {
         // Gán sự kiện cho các nút
         Lop_bnt.addActionListener(buttonColorHandler);
         Mon_bnt.addActionListener(buttonColorHandler);
+        diemDanh_btn.addActionListener(buttonColorHandler);
         btnDetails.addActionListener(buttonColorHandler);
 
         // Thêm sự kiện khi chọn lớp
@@ -117,8 +138,13 @@ public class QuanLyLopHoc extends JPanel {
         mon1.addActionListener(e -> HienThi.setText("Danh Sách Lớp Môn:Toán Cao Cấp"));
         mon2.addActionListener(e ->HienThi.setText("Danh Sách Lớp Môn:Lập Trình Java"));
         mon3.addActionListener(e -> HienThi.setText("Danh Sách Lớp Môn:Cơ Sở Dữ Liệu"));
+     // Thêm sự kiện khi chọn môn
+        DiemDanh1.addActionListener(e -> HienThi.setText("Danh Sách Điểm Danh Môn:Toán Cao Cấp"));
+        DiemDanh2.addActionListener(e ->HienThi.setText("Danh Sách Điểm Danh Môn:Lập Trình Java"));
+        DiemDanh3.addActionListener(e -> HienThi.setText("Danh Sách Điểm Danh Môn:Cơ Sở Dữ Liệu"));
 
-        DanhSach_list.setBounds(31, 179, 833, 444);
+
+        DanhSach_list.setBounds(22, 179, 849, 444);
         add(DanhSach_list);
 
         HienThi = new JTextField();
@@ -126,5 +152,7 @@ public class QuanLyLopHoc extends JPanel {
         HienThi.setBounds(72, 125, 371, 31);
         add(HienThi);
         HienThi.setColumns(10);
+        
+        
     }
 }

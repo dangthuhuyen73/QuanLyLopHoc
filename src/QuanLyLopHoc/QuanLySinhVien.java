@@ -2,6 +2,7 @@ package QuanLyLopHoc;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileOutputStream;
@@ -81,12 +82,16 @@ public class QuanLySinhVien extends JPanel {
 		MaSV_text.setBounds(271, 74, 321, 40);
 		add(MaSV_text);
 
-		JButton btnTimKiem = new JButton("Tìm Kiếm");
-		btnTimKiem.setVerticalTextPosition(SwingConstants.CENTER);
-		btnTimKiem.setHorizontalTextPosition(SwingConstants.RIGHT);
-		btnTimKiem.setForeground(Color.BLACK);
+		ImageIcon icon = null;
+		icon = new ImageIcon(getClass().getResource("/Icon/find.png"));
+		Image scaledImage = icon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
+		icon = new ImageIcon(scaledImage);
+		JButton btnTimKiem = new JButton("Tìm Kiếm", icon);
 		btnTimKiem.setFont(new Font("Times New Roman", Font.BOLD, 14));
-		btnTimKiem.setBounds(612, 74, 117, 40);
+		btnTimKiem.setForeground(Color.BLACK);
+		btnTimKiem.setBounds(610, 75, 131, 40);
+		btnTimKiem.setHorizontalTextPosition(SwingConstants.RIGHT);
+		btnTimKiem.setVerticalTextPosition(SwingConstants.CENTER);
 		add(btnTimKiem);
 
 		JButton btn_TTSV = new JButton("THÔNG TIN CHI TIẾT");

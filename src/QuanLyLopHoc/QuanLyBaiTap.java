@@ -45,7 +45,7 @@ public class QuanLyBaiTap extends JPanel {
 		JLabel lblNewLabel = new JLabel("QUẢN LÝ BÀI TẬP");
 		lblNewLabel.setFont(new Font("Times New Roman", Font.BOLD, 25));
 		lblNewLabel.setForeground(new Color(255, 255, 255));
-		lblNewLabel.setBounds(300, 10, 300, 40);
+		lblNewLabel.setBounds(300, 10, 242, 40);
 		add(lblNewLabel);
 
 		// Nút Bài Tập Đã Nộp
@@ -73,13 +73,14 @@ public class QuanLyBaiTap extends JPanel {
 		add(btnXuat);
 
 		// Nút Tìm Kiếm
-		ImageIcon icon = new ImageIcon("Icon/find.png"); // Đảm bảo đường dẫn đúng
+		ImageIcon icon = null;
+		icon = new ImageIcon(getClass().getResource("/Icon/find.png"));
 		Image scaledImage = icon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
 		icon = new ImageIcon(scaledImage);
 		JButton btnTimKiem = new JButton("Tìm Kiếm", icon);
 		btnTimKiem.setFont(new Font("Times New Roman", Font.BOLD, 14));
 		btnTimKiem.setForeground(Color.BLACK);
-		btnTimKiem.setBounds(539, 72, 124, 40);
+		btnTimKiem.setBounds(576, 72, 131, 40);
 		btnTimKiem.setHorizontalTextPosition(SwingConstants.RIGHT);
 		btnTimKiem.setVerticalTextPosition(SwingConstants.CENTER);
 		add(btnTimKiem);
@@ -88,7 +89,7 @@ public class QuanLyBaiTap extends JPanel {
 		TimMon_comboBox = new JComboBox<>();
 		TimMon_comboBox.setModel(new DefaultComboBoxModel<>(new String[] { "", "Cảm Biến", "Java", "Android" }));
 		TimMon_comboBox.setFont(new Font("Times New Roman", Font.PLAIN, 15));
-		TimMon_comboBox.setBounds(210, 72, 296, 40);
+		TimMon_comboBox.setBounds(236, 72, 296, 40);
 		add(TimMon_comboBox);
 
 		// Tạo JTable với DefaultTableModel
@@ -119,7 +120,7 @@ public class QuanLyBaiTap extends JPanel {
 		JLabel labelMonHoc = new JLabel("Môn học:");
 		labelMonHoc.setForeground(Color.WHITE);
 		labelMonHoc.setFont(new Font("Times New Roman", Font.BOLD, 15));
-		labelMonHoc.setBounds(115, 72, 85, 40);
+		labelMonHoc.setBounds(141, 72, 85, 40);
 		add(labelMonHoc);
 
 		// Tải dữ liệu ban đầu từ database

@@ -82,14 +82,9 @@ public class QuanLyGiangVien extends JPanel {
 
 		// Kiểm tra tải hình ảnh icon
 		ImageIcon icon = null;
-		try {
-			icon = new ImageIcon(getClass().getResource("/Icon/find.png"));
-			Image scaledImage = icon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
-			icon = new ImageIcon(scaledImage);
-		} catch (NullPointerException e) {
-			JOptionPane.showMessageDialog(this, "Không tìm thấy icon /Icon/find.png!", "Lỗi",
-					JOptionPane.ERROR_MESSAGE);
-		}
+		icon = new ImageIcon(getClass().getResource("/Icon/find.png"));
+		Image scaledImage = icon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
+		icon = new ImageIcon(scaledImage);
 
 		JButton btnTimKiem = new JButton("Tìm Kiếm", icon);
 		btnTimKiem.setFont(new Font("Times New Roman", Font.BOLD, 14));
