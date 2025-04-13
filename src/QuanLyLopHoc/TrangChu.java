@@ -28,19 +28,6 @@ public class TrangChu extends JFrame {
     private DefaultTableModel tableModel;
     private Calendar today = Calendar.getInstance();
 
-    public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    TrangChu frame = new TrangChu();
-                    frame.setVisible(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
-
     public TrangChu() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 1000, 700);
@@ -289,10 +276,118 @@ public class TrangChu extends JFrame {
         JPanel panel_1 = new JPanel();
         panel_1.setBounds(10, 90, 443, 267);
         TrangChinh.add(panel_1);
+        panel_1.setLayout(null);
+        
+        JLabel lblNewLabel_1 = new JLabel("NHÓM 9");
+        lblNewLabel_1.setFont(new Font("Times New Roman", Font.BOLD, 25));
+        lblNewLabel_1.setForeground(new Color(255, 0, 0));
+        lblNewLabel_1.setBounds(173, 11, 101, 24);
+        panel_1.add(lblNewLabel_1);
+        
+        JLabel lblNewLabel_2 = new JLabel("QUẢN LÝ LỚP HỌC ONLINE");
+        lblNewLabel_2.setFont(new Font("Times New Roman", Font.BOLD, 20));
+        lblNewLabel_2.setForeground(new Color(0, 0, 160));
+        lblNewLabel_2.setBounds(88, 46, 284, 24);
+        panel_1.add(lblNewLabel_2);
+        
+        JLabel lblNewLabel_3 = new JLabel("1. Đặng Thu Huyền                  - N21DCVT040");
+        lblNewLabel_3.setFont(new Font("Times New Roman", Font.BOLD, 15));
+        lblNewLabel_3.setBounds(66, 97, 322, 24);
+        panel_1.add(lblNewLabel_3);
+        
+        JLabel lblNewLabel_4 = new JLabel("2. Trần Minh Thương             -  N21DCVT101");
+        lblNewLabel_4.setFont(new Font("Times New Roman", Font.BOLD, 15));
+        lblNewLabel_4.setBounds(66, 132, 322, 28);
+        panel_1.add(lblNewLabel_4);
+        
+        JLabel lblNewLabel_5 = new JLabel("3. Trần Nguyễn Tuấn Khanh  - N21DCVT045");
+        lblNewLabel_5.setFont(new Font("Times New Roman", Font.BOLD, 15));
+        lblNewLabel_5.setBounds(66, 171, 337, 28);
+        panel_1.add(lblNewLabel_5);
+        
+        JLabel lblNewLabel_6 = new JLabel("4. Nguyễn Đình lân                  - N21DCVT0");
+        lblNewLabel_6.setFont(new Font("Times New Roman", Font.BOLD, 15));
+        lblNewLabel_6.setBounds(66, 213, 322, 24);
+        panel_1.add(lblNewLabel_6);
 
         JPanel panel_1_1 = new JPanel();
-        panel_1_1.setBounds(10, 368, 875, 273);
+        panel_1_1.setBounds(10, 368, 875, 259);
         TrangChinh.add(panel_1_1);
+        panel_1_1.setLayout(null);
+        
+        JPanel panel_GV = new JPanel();
+        panel_GV.setBackground(new Color(255, 138, 21));
+        panel_GV.setBounds(300, 48, 283, 187);
+        panel_1_1.add(panel_GV);
+        panel_GV.setLayout(null);
+        
+        JPanel panel_2_1 = new JPanel();
+        panel_2_1.setBounds(142, 34, 4, 119);
+        panel_GV.add(panel_2_1);
+        
+        JLabel lbl_GV = new JLabel("GIẢNG VIÊN");
+        lbl_GV.setForeground(Color.WHITE);
+        lbl_GV.setFont(new Font("Times New Roman", Font.BOLD, 15));
+        lbl_GV.setBounds(156, 110, 100, 26);
+        panel_GV.add(lbl_GV);
+        
+        ImageIcon gvIcon = new ImageIcon(getClass().getResource("/Icon/GiangVien.png"));
+        Image scaledShopp2 = gvIcon.getImage().getScaledInstance(95, 85, Image.SCALE_SMOOTH);
+        JLabel gv = new JLabel(new ImageIcon(scaledShopp2));
+        gv.setBounds(32, 45, 100, 95);
+        panel_GV.add(gv);
+        
+        JPanel panel_SV = new JPanel();
+        panel_SV.setBackground(new Color(255, 36, 36));
+        panel_SV.setBounds(10, 48, 280, 187);
+        panel_1_1.add(panel_SV);
+        panel_SV.setLayout(null);
+        
+        
+        JLabel lbl_sv = new JLabel("SINH VIÊN");
+        lbl_sv.setForeground(new Color(255, 255, 255));
+        lbl_sv.setFont(new Font("Times New Roman", Font.BOLD, 15));
+        lbl_sv.setBounds(152, 111, 100, 26);
+        panel_SV.add(lbl_sv);
+        
+        ImageIcon svIcon = new ImageIcon(getClass().getResource("/Icon/sv.png"));
+        Image scaledShopp1 = svIcon.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH);
+        JLabel sv = new JLabel(new ImageIcon(scaledShopp1));
+        sv.setBounds(24, 52, 85, 85);
+        panel_SV.add(sv);
+        
+        JPanel panel_2_1_1 = new JPanel();
+        panel_2_1_1.setBounds(138, 35, 4, 119);
+        panel_SV.add(panel_2_1_1);
+        
+        JPanel panel_BT = new JPanel();
+        panel_BT.setBackground(new Color(38, 147, 255));
+        panel_BT.setBounds(593, 48, 272, 187);
+        panel_1_1.add(panel_BT);
+        panel_BT.setLayout(null);
+        
+        JPanel panel_2_2 = new JPanel();
+        panel_2_2.setBounds(144, 37, 4, 119);
+        panel_BT.add(panel_2_2);
+        
+        JLabel lbl_GV_1 = new JLabel("BÀI TẬP");
+        lbl_GV_1.setForeground(Color.WHITE);
+        lbl_GV_1.setFont(new Font("Times New Roman", Font.BOLD, 15));
+        lbl_GV_1.setBounds(158, 111, 100, 26);
+        panel_BT.add(lbl_GV_1);
+        
+        ImageIcon btIcon = new ImageIcon(getClass().getResource("/Icon/vo.png"));
+        Image scaledShopp3 = btIcon.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH);
+        JLabel bt = new JLabel(new ImageIcon(scaledShopp3));
+        bt.setBounds(36, 53, 85, 85);
+        panel_BT.add(bt);
+        
+        JLabel lblNewLabel = new JLabel("THỐNG KÊ");
+        lblNewLabel.setFont(new Font("Times New Roman", Font.BOLD, 20));
+        lblNewLabel.setForeground(new Color(0, 0, 160));
+        lblNewLabel.setBackground(new Color(0, 0, 160));
+        lblNewLabel.setBounds(392, 11, 126, 26);
+        panel_1_1.add(lblNewLabel);
 
      // Khởi tạo panel_1_2 cho lịch
         JPanel panel_1_2 = new JPanel();
@@ -482,5 +577,17 @@ public class TrangChu extends JFrame {
             button.setContentAreaFilled(false);
             button.setBackground(null);
         }
+    }
+    public static void main(String[] args) {
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                try {
+                    TrangChu frame = new TrangChu();
+                    frame.setVisible(true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 }

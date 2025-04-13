@@ -6,6 +6,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import com.toedter.calendar.JDateChooser;
 import java.text.SimpleDateFormat;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Date;
+
 
 
 public class SinhVien extends JPanel {
@@ -21,6 +29,13 @@ public class SinhVien extends JPanel {
     private JComboBox<String> Lop_ComboBox;
     private JComboBox<String> GioiTinh_ComboBox;
     private JComboBox<String> MonHoc_ComboBox;
+    private ThongTinSinhVien tempStudentInfo; // Biến tạm để lưu thông tin
+    
+ // Thông tin kết nối database
+ 	private static final String DB_URL = "jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=require&pgbouncer=true";
+ 	private static final String DB_USERNAME = "postgres.vpehkzjmzpcskfzjjyql";
+ 	private static final String DB_PASSWORD = "MinhThuong0808";
+
 
     public SinhVien() {
         setBackground(new Color(0, 0, 121));
@@ -187,6 +202,9 @@ public class SinhVien extends JPanel {
                 ThoiGian_text.setText("");
             }
         });
+        
+     // Tạo bảng khi khởi tạo
+     	createTables();
 
         // Nút LƯU
         JButton Luu_button = new JButton("LƯU");
@@ -196,24 +214,17 @@ public class SinhVien extends JPanel {
         add(Luu_button);
 
         Luu_button.addActionListener(e -> {
-            if (HoTen_text.getText().trim().isEmpty() ||
-                Mssv_text.getText().trim().isEmpty() ||
-                Lop_ComboBox.getSelectedIndex() == 0 ||
-                NgaySinh.getDate() == null ||
-                GioiTinh_ComboBox.getSelectedIndex() == 0 ||
-                Email_text.getText().trim().isEmpty() ||
-                MonHoc_ComboBox.getSelectedIndex() == 0 ||
-                MaMon_text.getText().trim().isEmpty() ||
-                SoTin_text.getText().trim().isEmpty() ||
-                ThoiGian_text.getText().trim().isEmpty()) {
-                
-                JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ tất cả các thông tin!", "Lỗi",
-                        JOptionPane.ERROR_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(this, "Lưu thông tin thành công!", "Thành công",
-                        JOptionPane.INFORMATION_MESSAGE);
-            }
-        });
+			if (HoTen_text.getText().trim().isEmpty() || Mssv_text.getText().trim().isEmpty()
+					|| Lop_ComboBox.getSelectedIndex() == 0 || NgaySinh.getDate() == null
+					|| GioiTinh_ComboBox.getSelectedIndex() == 0 || Email_text.getText().trim().isEmpty()
+					|| MonHoc_ComboBox.getSelectedIndex() == 0 || MaMon_text.getText().trim().isEmpty()
+					|| SoTin_text.getText().trim().isEmpty() || ThoiGian_text.getText().trim().isEmpty()) {
+				JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ tất cả các thông tin!", "Lỗi",
+						JOptionPane.ERROR_MESSAGE);
+			} else {
+				saveToDatabase();
+			}
+		});
 
         // Nút XUẤT
         JButton xuat_button = new JButton("XUẤT");
@@ -224,44 +235,149 @@ public class SinhVien extends JPanel {
         add(xuat_button);
 
         xuat_button.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Kiểm tra các trường bắt buộc
-                if (HoTen_text.getText().trim().isEmpty() ||
-                    Mssv_text.getText().trim().isEmpty() ||
-                    Lop_ComboBox.getSelectedIndex() == 0 ||
-                    NgaySinh.getDate() == null ||
-                    GioiTinh_ComboBox.getSelectedIndex() == 0 ||
-                    Email_text.getText().trim().isEmpty() ||
-                    MonHoc_ComboBox.getSelectedIndex() == 0 ||
-                    MaMon_text.getText().trim().isEmpty() ||
-                    SoTin_text.getText().trim().isEmpty() ||
-                    ThoiGian_text.getText().trim().isEmpty()) {
-                    
-                    JOptionPane.showMessageDialog(SinhVien.this, "Vui lòng điền đầy đủ tất cả các thông tin!", "Lỗi",
-                            JOptionPane.ERROR_MESSAGE);
-                } else {
-                    EventQueue.invokeLater(() -> {
-                        // Lấy giá trị trực tiếp trong lambda
-                        String hoTen = HoTen_text.getText();
-                        String mssv = Mssv_text.getText();
-                        String lop = Lop_ComboBox.getSelectedItem().toString();
-                        String gioiTinh = (String) GioiTinh_ComboBox.getSelectedItem();
-                        String email = Email_text.getText();
-                        String monHoc = MonHoc_ComboBox.getSelectedItem().toString();
-                        String maMon = MaMon_text.getText();
-                        String soTin = SoTin_text.getText();
-                        String thoiGian = ThoiGian_text.getText();
-                        String ngaySinh = "";
-                        if (NgaySinh.getDate() != null) {
-                            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                            ngaySinh = sdf.format(NgaySinh.getDate());
-                        }
-
-                        ThongTinSinhVien frame = new ThongTinSinhVien(hoTen, mssv, lop, ngaySinh, gioiTinh, email, monHoc, maMon, soTin, thoiGian);
-                        frame.setVisible(true);
-                    });
-                }
-            }
-        });
+			public void actionPerformed(ActionEvent e) {
+				if (tempStudentInfo == null) {
+					JOptionPane.showMessageDialog(SinhVien.this,
+							"Chưa có dữ liệu nào được lưu. Vui lòng nhấn LƯU trước!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+				} else {
+					EventQueue.invokeLater(() -> {
+						ThongTinSinhVien frame = new ThongTinSinhVien(tempStudentInfo.getHoTen(),
+								tempStudentInfo.getMssv(), tempStudentInfo.getLop(), tempStudentInfo.getNgaySinh(),
+								tempStudentInfo.getGioiTinh(), tempStudentInfo.getEmail(), tempStudentInfo.getMonHoc(),
+								tempStudentInfo.getMaMon(), tempStudentInfo.getSoTin(), tempStudentInfo.getThoiGian());
+						frame.setVisible(true);
+					});
+				}
+			}
+		});
     }
+    private void createTables() {
+		Connection conn = null;
+		Statement stmt = null;
+
+		try {
+			conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+			stmt = conn.createStatement();
+
+			String sqlStudents = "CREATE TABLE IF NOT EXISTS students (" + "mssv VARCHAR(50) PRIMARY KEY,"
+					+ "hoten VARCHAR(100)," + "ngaysinh DATE," + "gioitinh VARCHAR(10)," + "lop VARCHAR(50),"
+					+ "email VARCHAR(100)" + ")";
+			stmt.executeUpdate(sqlStudents);
+
+			String sqlCourses = "CREATE TABLE IF NOT EXISTS courses (" + "id SERIAL PRIMARY KEY,"
+					+ "mssv VARCHAR(50) REFERENCES students(mssv)," + "monhoc VARCHAR(100)," + "mamon VARCHAR(50),"
+					+ "sotin INTEGER," + "thoigian VARCHAR(50)" + ")";
+			stmt.executeUpdate(sqlCourses);
+
+		} catch (SQLException ex) {
+			JOptionPane.showMessageDialog(this, "Lỗi khi tạo bảng: " + ex.getMessage(), "Lỗi",
+					JOptionPane.ERROR_MESSAGE);
+			ex.printStackTrace();
+		} finally {
+			try {
+				if (stmt != null)
+					stmt.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+		}
+	}
+
+	private void saveToDatabase() {
+		Connection conn = null;
+		PreparedStatement pstmtStudent = null;
+		PreparedStatement pstmtCourse = null;
+		PreparedStatement pstmtCheck = null;
+		ResultSet rs = null;
+
+		try {
+			conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+
+			// Kiểm tra xem MSSV đã tồn tại chưa
+			String checkSql = "SELECT mssv FROM students WHERE mssv = ?";
+			pstmtCheck = conn.prepareStatement(checkSql);
+			pstmtCheck.setString(1, Mssv_text.getText());
+			rs = pstmtCheck.executeQuery();
+
+			if (rs.next()) {
+				// Nếu MSSV đã tồn tại, hiển thị thông báo lỗi
+				JOptionPane.showMessageDialog(this, "MSSV đã tồn tại trong cơ sở dữ liệu!", "Lỗi",
+						JOptionPane.ERROR_MESSAGE);
+				return; // Dừng phương thức, không lưu dữ liệu
+			}
+
+			// Nếu MSSV chưa tồn tại, tiếp tục lưu thông tin sinh viên
+			String sqlStudent = "INSERT INTO students (mssv, hoten, ngaysinh, gioitinh, lop, email) VALUES (?, ?, ?, ?, ?, ?)";
+			pstmtStudent = conn.prepareStatement(sqlStudent);
+			pstmtStudent.setString(1, Mssv_text.getText());
+			pstmtStudent.setString(2, HoTen_text.getText());
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			Date date = NgaySinh.getDate();
+			pstmtStudent.setDate(3, date != null ? new java.sql.Date(date.getTime()) : null);
+			pstmtStudent.setString(4, GioiTinh_ComboBox.getSelectedItem().toString());
+			pstmtStudent.setString(5, Lop_ComboBox.getSelectedItem().toString());
+			pstmtStudent.setString(6, Email_text.getText());
+			pstmtStudent.executeUpdate();
+
+			// Lưu thông tin khóa học
+			String sqlCourse = "INSERT INTO courses (mssv, monhoc, mamon, sotin, thoigian) VALUES (?, ?, ?, ?, ?)";
+			pstmtCourse = conn.prepareStatement(sqlCourse);
+			pstmtCourse.setString(1, Mssv_text.getText());
+			pstmtCourse.setString(2, MonHoc_ComboBox.getSelectedItem().toString());
+			pstmtCourse.setString(3, MaMon_text.getText());
+			pstmtCourse.setInt(4, Integer.parseInt(SoTin_text.getText()));
+			pstmtCourse.setString(5, ThoiGian_text.getText());
+			pstmtCourse.executeUpdate();
+
+			// Lưu dữ liệu vào biến tạm
+			SimpleDateFormat sdfDisplay = new SimpleDateFormat("dd/MM/yyyy");
+			String ngaySinh = date != null ? sdfDisplay.format(date) : "";
+			tempStudentInfo = new ThongTinSinhVien(HoTen_text.getText(), Mssv_text.getText(),
+					Lop_ComboBox.getSelectedItem().toString(), ngaySinh, GioiTinh_ComboBox.getSelectedItem().toString(),
+					Email_text.getText(), MonHoc_ComboBox.getSelectedItem().toString(), MaMon_text.getText(),
+					SoTin_text.getText(), ThoiGian_text.getText());
+
+			JOptionPane.showMessageDialog(this, "Lưu thông tin thành công!", "Thành công",
+					JOptionPane.INFORMATION_MESSAGE);
+
+			clearForm();
+
+		} catch (SQLException ex) {
+			JOptionPane.showMessageDialog(this, "Lỗi khi lưu vào database: " + ex.getMessage(), "Lỗi",
+					JOptionPane.ERROR_MESSAGE);
+			ex.printStackTrace();
+		} catch (NumberFormatException ex) {
+			JOptionPane.showMessageDialog(this, "Số tín phải là số nguyên!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (pstmtCheck != null)
+					pstmtCheck.close();
+				if (pstmtStudent != null)
+					pstmtStudent.close();
+				if (pstmtCourse != null)
+					pstmtCourse.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+		}
+	}
+
+	private void clearForm() {
+		HoTen_text.setText("");
+		Mssv_text.setText("");
+		Email_text.setText("");
+		NgaySinh.setDate(null);
+		ThoiGian_text.setText("");
+		MaMon_text.setText("");
+		SoTin_text.setText("");
+		Lop_ComboBox.setSelectedIndex(0);
+		GioiTinh_ComboBox.setSelectedIndex(0);
+		MonHoc_ComboBox.setSelectedIndex(0);
+	}
 }
