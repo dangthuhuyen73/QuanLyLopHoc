@@ -120,10 +120,18 @@ public class ThongTinGiangVien extends JFrame {
         avata.setBackground(Color.WHITE);
         avata.setOpaque(true);
         ThongTinGiangVienPanel.add(avata);
-        
+
+        // Tải hình ảnh và xử lý lỗi nếu không tìm thấy
         ImageIcon avatarIcon = new ImageIcon(getClass().getResource("/Icon/GV.png"));
-        Image scaledImage = avatarIcon.getImage().getScaledInstance(224, 227, Image.SCALE_SMOOTH);
-        avata.setIcon(new ImageIcon(scaledImage));
+        if (avatarIcon.getImage() != null) {
+            Image scaledImage = avatarIcon.getImage().getScaledInstance(224, 227, Image.SCALE_SMOOTH);
+            avata.setIcon(new ImageIcon(scaledImage));
+        } else {
+            JOptionPane.showMessageDialog(this,
+                "Không thể tải hình ảnh avatar! Vui lòng kiểm tra đường dẫn /Icon/GV.png",
+                "Lỗi",
+                JOptionPane.ERROR_MESSAGE);
+        }
 
         JPanel panel = new JPanel();
         panel.setBackground(new Color(255, 204, 0));
@@ -164,7 +172,7 @@ public class ThongTinGiangVien extends JFrame {
         btnSua.setFont(new Font("Times New Roman", Font.BOLD, 15));
         btnSua.setBounds(97, 514, 129, 44);
         btnSua.setBackground(new Color(50, 150, 255)); // Màu xanh sáng
-        btnSua.setForeground(new Color(0, 0, 0)); // Chữ màu trắng
+        btnSua.setForeground(Color.WHITE); // Chữ màu trắng (sửa lỗi)
         btnSua.setBorder(new LineBorder(Color.WHITE, 1)); // Viền trắng
         ThongTinGiangVienPanel.add(btnSua);
 
@@ -172,8 +180,8 @@ public class ThongTinGiangVien extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 if (!isEditing) {
                     btnSua.setText("LƯU");
-                    btnSua.setBackground(new Color(255, 53, 53)); // Màu xanh sáng
-                    btnSua.setForeground(new Color(0, 0, 0)); // Chữ màu trắng
+                    btnSua.setBackground(new Color(255, 53, 53)); // Màu đỏ
+                    btnSua.setForeground(Color.WHITE); // Chữ màu trắng (sửa lỗi)
                     btnSua.setBorder(new LineBorder(Color.WHITE, 1)); // Viền trắng
                     setFieldsEditable(true);
                     isEditing = true;
@@ -181,7 +189,7 @@ public class ThongTinGiangVien extends JFrame {
                     if (checkFieldsFilled()) {
                         btnSua.setText("SỬA");
                         btnSua.setBackground(new Color(50, 150, 255)); // Màu xanh sáng
-                        btnSua.setForeground(new Color(0, 0, 0)); // Chữ màu trắng
+                        btnSua.setForeground(Color.WHITE); // Chữ màu trắng (sửa lỗi)
                         btnSua.setBorder(new LineBorder(Color.WHITE, 1)); // Viền trắng
                         setFieldsEditable(false);
                         isEditing = false;
@@ -213,11 +221,18 @@ public class ThongTinGiangVien extends JFrame {
         btnGiaoBai.setBorder(new LineBorder(Color.WHITE, 1));
         ThongTinGiangVienPanel.add(btnGiaoBai);
         btnGiaoBai.addActionListener(e -> {
-             String hoTen = HoTen_text1.getText();
-             String monGiangDay = (String) Mon_ComboBox.getSelectedItem();           
-             GiaoBaiTap thongTin = new GiaoBaiTap(hoTen,  monGiangDay);
+            String hoTen = HoTen_text1.getText();
+            String monGiangDay = (String) Mon_ComboBox.getSelectedItem();
+            if (monGiangDay != null && !monGiangDay.isEmpty()) {
+                GiaoBaiTap thongTin = new GiaoBaiTap(hoTen, monGiangDay);
                 thongTin.setVisible(true);
-            });
+            } else {
+                JOptionPane.showMessageDialog(ThongTinGiangVien.this,
+                    "Vui lòng chọn môn giảng dạy!",
+                    "Cảnh báo",
+                    JOptionPane.WARNING_MESSAGE);
+            }
+        });
 
         JButton btnDiemDanh = new JButton("ĐIỂM DANH");
         btnDiemDanh.setBackground(new Color(255, 165, 80));
@@ -225,6 +240,18 @@ public class ThongTinGiangVien extends JFrame {
         btnDiemDanh.setBounds(652, 514, 129, 44);
         btnDiemDanh.setBorder(new LineBorder(Color.WHITE, 1));
         ThongTinGiangVienPanel.add(btnDiemDanh);
+        btnDiemDanh.addActionListener(e -> {
+            String monGiangDay = (String) Mon_ComboBox.getSelectedItem();
+            if (monGiangDay != null && !monGiangDay.isEmpty()) {
+                DiemDanh diemDanh = new DiemDanh(monGiangDay);
+                diemDanh.setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(ThongTinGiangVien.this,
+                    "Vui lòng chọn môn giảng dạy!",
+                    "Cảnh báo",
+                    JOptionPane.WARNING_MESSAGE);
+            }
+        });
     }
 
     // Bật/tắt chế độ chỉnh sửa cho các trường
@@ -234,7 +261,7 @@ public class ThongTinGiangVien extends JFrame {
         Email_text1.setEditable(editable);
         SoDienThoai_text1.setEditable(editable);
         MaMon_text1.setEditable(editable);
-        Mon_ComboBox.setEnabled(editable);     
+        Mon_ComboBox.setEnabled(editable);
     }
 
     // Kiểm tra xem tất cả các trường đã được điền chưa
@@ -244,7 +271,7 @@ public class ThongTinGiangVien extends JFrame {
                !Email_text1.getText().trim().isEmpty() &&
                !SoDienThoai_text1.getText().trim().isEmpty() &&
                !MaMon_text1.getText().trim().isEmpty() &&
-               Mon_ComboBox.getSelectedIndex() != 0 ;
+               Mon_ComboBox.getSelectedIndex() != 0;
     }
 
     public static void main(String[] args) {

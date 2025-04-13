@@ -65,17 +65,25 @@ public class SignUp extends JFrame {
 
 		// Panel nền với gradient
 		contentPane = new JPanel() {
-			@Override
-			protected void paintComponent(Graphics g) {
-				super.paintComponent(g);
-				Graphics2D g2d = (Graphics2D) g;
-				g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-				GradientPaint gp = new GradientPaint(0, 0, new Color(240, 248, 255), 0, getHeight(),
-						new Color(173, 216, 230));
-				g2d.setPaint(gp);
-				g2d.fillRect(0, 0, getWidth(), getHeight());
-			}
-		};
+			private Image backgroundImage;
+
+            {
+                // Tải hình nền từ resource (thay thế "/Icon/background.jpg" bằng đường dẫn hình của bạn)
+                ImageIcon icon = new ImageIcon(getClass().getResource("/Icon/truong.jpg"));
+                if (icon.getImage() != null) {
+                    backgroundImage = icon.getImage();
+                }
+            }
+
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (backgroundImage != null) {
+                    // Vẽ hình nền, scale để fit khung
+                    g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+                }
+            }
+        };
 		contentPane.setBorder(new EmptyBorder(20, 20, 20, 20));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
@@ -83,7 +91,7 @@ public class SignUp extends JFrame {
 		// Panel chứa form
 		JPanel formPanel = new JPanel();
 		formPanel.setBounds(150, 40, 450, 400);
-		formPanel.setBackground(new Color(255, 255, 255, 230));
+		formPanel.setBackground(new Color(0, 165, 244));
 		formPanel.setBorder(new LineBorder(new Color(200, 200, 200), 1, true));
 		formPanel.setLayout(null);
 		contentPane.add(formPanel);
@@ -144,7 +152,7 @@ public class SignUp extends JFrame {
 		// Nút Đăng ký
 		JButton btnSignUp = new JButton("Đăng Ký");
 		btnSignUp.setFont(new Font("Arial", Font.BOLD, 16));
-		btnSignUp.setBackground(new Color(65, 105, 225));
+		btnSignUp.setBackground(new Color(0, 71, 142));
 		btnSignUp.setForeground(Color.WHITE);
 		btnSignUp.setBounds(50, 329, 150, 45);
 		btnSignUp.setBorderPainted(false);
@@ -156,7 +164,7 @@ public class SignUp extends JFrame {
 		// Nút Đăng nhập
 		JButton btnBackToLogin = new JButton("Đăng Nhập");
 		btnBackToLogin.setFont(new Font("Arial", Font.BOLD, 16));
-		btnBackToLogin.setBackground(new Color(70, 130, 180));
+		btnBackToLogin.setBackground(new Color(255, 43, 43));
 		btnBackToLogin.setForeground(Color.WHITE);
 		btnBackToLogin.setBounds(250, 329, 150, 45);
 		btnBackToLogin.setBorderPainted(false);

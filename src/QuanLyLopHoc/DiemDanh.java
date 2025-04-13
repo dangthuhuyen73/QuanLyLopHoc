@@ -1,119 +1,86 @@
 package QuanLyLopHoc;
 
-import java.awt.EventQueue;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.ArrayList;
+import java.awt.Font;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTable;
+import javax.swing.border.EmptyBorder;
+import java.awt.Color;
+import javax.swing.JButton;
+import javax.swing.JTextField;
 
 public class DiemDanh extends JFrame {
 
-    private JTextField txtBuoi, txtGiaoVien, txtThoiGian, txtCoSo, txtSySo;
-    private ArrayList<JCheckBox> checkboxes = new ArrayList<>();
-    private String[] hocViens = {"Học Viên 01", "Học Viên 02", "Học Viên 03", "Học Viên 04", "Học Viên 05"};
+    private static final long serialVersionUID = 1L;
+    private JPanel contentPane;
+    private JTextField monTextField; // Sử dụng JTextField thay vì JTextArea cho phù hợp
+    private JTable table;
 
-    public DiemDanh() {
-        setTitle("Điểm Danh Lớp Học");
-        setSize(450, 550);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    public DiemDanh(String monGiangDay) {
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setBounds(100, 100, 895, 652);
         setLocationRelativeTo(null);
 
-        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
-        mainPanel.setBackground(new Color(0, 0, 160));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        contentPane = new JPanel();
+        contentPane.setBackground(new Color(0, 0, 121));
+        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+        setContentPane(contentPane);
+        contentPane.setLayout(null);
 
-        // Panel nhập thông tin lớp học
-        JPanel inputPanel = new JPanel(new GridLayout(5, 2, 5, 5));
-        inputPanel.setBackground(new Color(255, 255, 255));
-        txtBuoi = new JTextField();        // để trống
-        txtBuoi.setFont(new Font("Times New Roman", Font.PLAIN, 11));
-        txtGiaoVien = new JTextField();    // để trống
-        txtGiaoVien.setFont(new Font("Times New Roman", Font.PLAIN, 11));
-        txtThoiGian = new JTextField();    // để trống
-        txtThoiGian.setFont(new Font("Times New Roman", Font.PLAIN, 11));
-        txtCoSo = new JTextField();        // để trống
-        txtCoSo.setFont(new Font("Times New Roman", Font.PLAIN, 11));
-        txtSySo = new JTextField();        // để trống
-        txtSySo.setFont(new Font("Times New Roman", Font.PLAIN, 11));
+        JPanel panel = new JPanel();
+        panel.setBackground(new Color(255, 204, 0));
+        panel.setBounds(0, 0, 881, 57);
+        panel.setLayout(null);
+        contentPane.add(panel);
 
-        JLabel label = new JLabel("Buổi học:");
-        label.setFont(new Font("Times New Roman", Font.BOLD, 11));
-        inputPanel.add(label);
-        inputPanel.add(txtBuoi);
-        JLabel label_1 = new JLabel("Giáo viên:");
-        label_1.setFont(new Font("Times New Roman", Font.BOLD, 11));
-        inputPanel.add(label_1);
-        inputPanel.add(txtGiaoVien);
-        JLabel label_2 = new JLabel("Thời gian:");
-        label_2.setFont(new Font("Times New Roman", Font.BOLD, 11));
-        inputPanel.add(label_2);
-        inputPanel.add(txtThoiGian);
-        JLabel label_3 = new JLabel("Cơ sở:");
-        label_3.setFont(new Font("Times New Roman", Font.BOLD, 11));
-        inputPanel.add(label_3);
-        inputPanel.add(txtCoSo);
-        JLabel label_4 = new JLabel("Sĩ số:");
-        label_4.setFont(new Font("Times New Roman", Font.BOLD, 11));
-        inputPanel.add(label_4);
-        inputPanel.add(txtSySo);
+        JLabel lblTitle = new JLabel("ĐIỂM DANH");
+        lblTitle.setBounds(342, 11, 198, 37);
+        panel.add(lblTitle);
+        lblTitle.setForeground(new Color(0, 0, 0));
+        lblTitle.setFont(new Font("Times New Roman", Font.BOLD, 25));
 
-        mainPanel.add(inputPanel, BorderLayout.NORTH);
+        JLabel lblNewLabel = new JLabel("MÔN GIẢNG DẠY:");
+        lblNewLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
+        lblNewLabel.setForeground(new Color(255, 255, 255));
+        lblNewLabel.setBounds(35, 82, 149, 31);
+        contentPane.add(lblNewLabel);
 
-        // Danh sách học viên
-        JPanel danhSachPanel = new JPanel();
-        danhSachPanel.setBackground(new Color(255, 255, 255));
-        danhSachPanel.setLayout(new BoxLayout(danhSachPanel, BoxLayout.Y_AXIS));
+        // Sử dụng JTextField để hiển thị môn giảng dạy
+        monTextField = new JTextField(monGiangDay); // Gán monGiangDay trực tiếp
+        monTextField.setFont(new Font("Times New Roman", Font.BOLD, 15));
+        monTextField.setForeground(new Color(0, 0, 0));
+        monTextField.setBounds(206, 82, 302, 31);
+        monTextField.setEditable(false); // Không cho phép chỉnh sửa
+        contentPane.add(monTextField);
 
-        for (String hocVien : hocViens) {
-            JCheckBox checkBox = new JCheckBox(hocVien);
-            checkboxes.add(checkBox);
-            danhSachPanel.add(checkBox);
-        }
+        JButton btnXuat = new JButton("Xuất Excel");
+        btnXuat.setForeground(new Color(0, 0, 0));
+        btnXuat.setFont(new Font("Times New Roman", Font.BOLD, 14));
+        btnXuat.setBackground(new Color(0, 204, 0));
+        btnXuat.setBounds(704, 552, 150, 40);
+        contentPane.add(btnXuat);
 
-        JScrollPane scrollPane = new JScrollPane(danhSachPanel);
-        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        JButton btnLuu = new JButton("LƯU");
+        btnLuu.setForeground(Color.BLACK);
+        btnLuu.setFont(new Font("Times New Roman", Font.BOLD, 14));
+        btnLuu.setBackground(new Color(0, 204, 0));
+        btnLuu.setBounds(593, 552, 101, 40);
+        contentPane.add(btnLuu);
 
-        // Nút xác nhận điểm danh
-        JButton btnXacNhan = new JButton("Xác nhận điểm danh");
-        btnXacNhan.setFont(new Font("Times New Roman", Font.BOLD, 11));
-        btnXacNhan.setBackground(new Color(255, 255, 0));
-        btnXacNhan.addActionListener(e -> xuLyDiemDanh());
-        mainPanel.add(btnXacNhan, BorderLayout.SOUTH);
-
-        getContentPane().add(mainPanel);
-    }
-
-    private void xuLyDiemDanh() {
-        String buoi = txtBuoi.getText().trim();
-        String giaoVien = txtGiaoVien.getText().trim();
-        String thoiGian = txtThoiGian.getText().trim();
-        String coSo = txtCoSo.getText().trim();
-        String sySo = txtSySo.getText().trim();
-
-        if (buoi.isEmpty() || giaoVien.isEmpty() || thoiGian.isEmpty() || coSo.isEmpty() || sySo.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin buổi học!", "Thiếu thông tin", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("📋 Thông tin buổi học:\n")
-          .append("Buổi: ").append(buoi).append("\n")
-          .append("Giáo viên: ").append(giaoVien).append("\n")
-          .append("Thời gian: ").append(thoiGian).append("\n")
-          .append("Cơ sở: ").append(coSo).append(" | Sỹ số: ").append(sySo).append("\n\n");
-
-        sb.append("📌 Danh sách điểm danh:\n");
-        for (int i = 0; i < hocViens.length; i++) {
-            sb.append(hocViens[i])
-              .append(": ")
-              .append(checkboxes.get(i).isSelected() ? "✅ Có mặt\n" : "❌ Vắng mặt\n");
-        }
-
-        JOptionPane.showMessageDialog(this, sb.toString(), "Kết quả điểm danh", JOptionPane.INFORMATION_MESSAGE);
+        JButton btnSua = new JButton("SỬA");
+        btnSua.setForeground(Color.BLACK);
+        btnSua.setFont(new Font("Times New Roman", Font.BOLD, 14));
+        btnSua.setBackground(new Color(0, 204, 0));
+        btnSua.setBounds(482, 552, 101, 40);
+        contentPane.add(btnSua);
+        
+        table = new JTable();
+        table.setBounds(20, 138, 839, 403);
+        contentPane.add(table);
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new DiemDanh().setVisible(true));
+        
     }
 }

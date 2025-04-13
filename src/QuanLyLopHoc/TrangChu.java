@@ -27,6 +27,7 @@ public class TrangChu extends JFrame {
     private JLabel monthYearLabel;
     private DefaultTableModel tableModel;
     private Calendar today = Calendar.getInstance();
+   
 
     public TrangChu() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -331,10 +332,10 @@ public class TrangChu extends JFrame {
         lbl_GV.setBounds(156, 110, 100, 26);
         panel_GV.add(lbl_GV);
         
-        ImageIcon gvIcon = new ImageIcon(getClass().getResource("/Icon/GiangVien.png"));
-        Image scaledShopp2 = gvIcon.getImage().getScaledInstance(95, 85, Image.SCALE_SMOOTH);
+        ImageIcon gvIcon = new ImageIcon(getClass().getResource("/Icon/teacher.png"));
+        Image scaledShopp2 = gvIcon.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH);
         JLabel gv = new JLabel(new ImageIcon(scaledShopp2));
-        gv.setBounds(32, 45, 100, 95);
+        gv.setBounds(32, 51, 85, 85);
         panel_GV.add(gv);
         
         JPanel panel_SV = new JPanel();
@@ -376,7 +377,7 @@ public class TrangChu extends JFrame {
         lbl_GV_1.setBounds(158, 111, 100, 26);
         panel_BT.add(lbl_GV_1);
         
-        ImageIcon btIcon = new ImageIcon(getClass().getResource("/Icon/vo.png"));
+        ImageIcon btIcon = new ImageIcon(getClass().getResource("/Icon/book.png"));
         Image scaledShopp3 = btIcon.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH);
         JLabel bt = new JLabel(new ImageIcon(scaledShopp3));
         bt.setBounds(36, 53, 85, 85);
