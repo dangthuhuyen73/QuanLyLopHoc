@@ -77,7 +77,7 @@ public class Login extends JFrame {
 
         JPanel formPanel = new JPanel();
         formPanel.setBounds(150, 40, 450, 400);
-        formPanel.setBackground(new Color(17, 136, 255)); // Giữ độ trong suốt
+        formPanel.setBackground(new Color(106, 181, 255)); // Giữ độ trong suốt
         formPanel.setBorder(new LineBorder(new Color(200, 200, 200), 1, true));
         formPanel.setLayout(null);
         contentPane.add(formPanel);

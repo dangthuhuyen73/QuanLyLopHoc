@@ -119,7 +119,7 @@ public class SinhVien extends JPanel {
 		GioiTinh_ComboBox.setBounds(343, 250, 65, 29);
 		panel.add(GioiTinh_ComboBox);
 
-		String[] items2 = { "", "D21CQVTHI-01", "D21CQVTVT-01", "D21CQVT-01N" };
+		String[] items2 = { "", "D21CQVTHI01-N", "D21CQVTVT-01", "D21CQVTMD01-N","D22CQVT01-N","D23CQVTMD01-N" };
 		Lop_ComboBox = new JComboBox<>(items2);
 		Lop_ComboBox.setFont(new Font("Times New Roman", Font.PLAIN, 15));
 		Lop_ComboBox.setBounds(98, 187, 310, 29);
@@ -171,7 +171,7 @@ public class SinhVien extends JPanel {
 		panel_1.add(Sdt_Label_1);
 
 		MonHoc_ComboBox = new JComboBox<>();
-		MonHoc_ComboBox.setModel(new DefaultComboBoxModel<>(new String[] { "", "Cảm Biến", "Java", "Android" }));
+		MonHoc_ComboBox.setModel(new DefaultComboBoxModel<>(new String[] { "", "Lập Trình Hướng Đối Tượng", "Hệ Thống nhúng IOT", "Hệ Thống Cảm Biến","Điện Toán Đám Mây","Phát Triển ứng Dụng","Tiếng Anh" }));
 		MonHoc_ComboBox.setFont(new Font("Times New Roman", Font.PLAIN, 15));
 		MonHoc_ComboBox.setBounds(114, 71, 296, 29);
 		panel_1.add(MonHoc_ComboBox);
@@ -183,18 +183,30 @@ public class SinhVien extends JPanel {
 
 		MonHoc_ComboBox.addItemListener(e -> {
 			String selectedSubject = (String) MonHoc_ComboBox.getSelectedItem();
-			if ("Cảm Biến".equals(selectedSubject)) {
-				MaMon_text.setText("iot");
+			if ("Lập Trình Hướng Đối Tượng".equals(selectedSubject)) {
+				MaMon_text.setText("TEL1448");
 				SoTin_text.setText("3");
-				ThoiGian_text.setText("4/5-6-8");
-			} else if ("Java".equals(selectedSubject)) {
-				MaMon_text.setText("jv");
+				ThoiGian_text.setText("Thứ 3,Tiết 7-10");
+			} else if ("Hệ Thống nhúng IOT".equals(selectedSubject)) {
+				MaMon_text.setText("TEL1457");
+				SoTin_text.setText("3");
+				ThoiGian_text.setText("Thứ 2,Tiết 7-10");
+			} else if ("Hệ Thống Cảm Biến".equals(selectedSubject)) {
+				MaMon_text.setText("TEL1467");
+				SoTin_text.setText("3");
+				ThoiGian_text.setText("Thứ 2,Tiết 1-4");
+			} else if ("Điện Toán Đám Mây".equals(selectedSubject)) {
+				MaMon_text.setText("TEL1447");
 				SoTin_text.setText("2");
-				ThoiGian_text.setText("6/7-7/8");
-			} else if ("Android".equals(selectedSubject)) {
-				MaMon_text.setText("ad");
+				ThoiGian_text.setText("Thứ 5,Tiết 7-10");
+			} else if ("Phát Triển ứng Dụng".equals(selectedSubject)) {
+				MaMon_text.setText("TEL1461");
 				SoTin_text.setText("3");
-				ThoiGian_text.setText("7/7-7/9");
+				ThoiGian_text.setText("Thứ 4,Tiết 7-10");
+			} else if ("Tiếng Anh".equals(selectedSubject)) {
+				MaMon_text.setText("BAS1160");
+				SoTin_text.setText("4");
+				ThoiGian_text.setText("Thứ 7,Tiết 1-4");
 			} else {
 				MaMon_text.setText("");
 				SoTin_text.setText("");

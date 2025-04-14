@@ -91,7 +91,7 @@ public class SignUp extends JFrame {
 		// Panel chứa form
 		JPanel formPanel = new JPanel();
 		formPanel.setBounds(150, 40, 450, 400);
-		formPanel.setBackground(new Color(0, 165, 244));
+		formPanel.setBackground(new Color(106, 181, 255));
 		formPanel.setBorder(new LineBorder(new Color(200, 200, 200), 1, true));
 		formPanel.setLayout(null);
 		contentPane.add(formPanel);

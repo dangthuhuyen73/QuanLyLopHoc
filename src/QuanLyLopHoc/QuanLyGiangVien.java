@@ -371,4 +371,19 @@ public class QuanLyGiangVien extends JPanel {
 			ex.printStackTrace();
 		}
 	}
+	// Phương thức đếm số lượng giảng viên
+    public int getTeacherCount() {
+        int count = 0;
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM giang_vien")) {
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Lỗi khi đếm giảng viên: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+        return count;
+    }
 }

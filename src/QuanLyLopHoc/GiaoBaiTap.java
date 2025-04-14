@@ -97,7 +97,7 @@ public class GiaoBaiTap extends JFrame {
         Mon_comboBox = new JComboBox<>();
         Mon_comboBox.setFont(new Font("Times New Roman", Font.PLAIN, 15));
         Mon_comboBox.setBounds(559, 93, 300, 30);
-        Mon_comboBox.setModel(new DefaultComboBoxModel<>(new String[]{"", "Cảm Biến", "Java", "Android"}));
+        Mon_comboBox.setModel(new DefaultComboBoxModel<>(new String[]{"", "Lập Trình Hướng Đối Tượng", "Hệ Thống nhúng IOT", "Hệ Thống Cảm Biến","Điện Toán Đám Mây","Phát Triển ứng Dụng","Tiếng Anh"}));
         Mon_comboBox.setEnabled(false); // Không cho phép chỉnh sửa môn học
         contentPane.add(Mon_comboBox);
 

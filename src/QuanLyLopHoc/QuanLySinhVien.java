@@ -28,10 +28,10 @@ public class QuanLySinhVien extends JPanel {
 	private JTextField MaSV_text;
 	private JTable table;
 	private DefaultTableModel tableModel;
-	private JPanel currentPanel; // Biến để theo dõi panel hiện tại
+	private JPanel currentPanel;
 
 	// Thông tin kết nối database
-	private static final String DB_URL = "jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=require&pgbouncer=true";
+	private static final String DB_URL = "jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=require&pgbouncer=true&prepareThreshold=0";
 	private static final String DB_USERNAME = "postgres.vpehkzjmzpcskfzjjyql";
 	private static final String DB_PASSWORD = "MinhThuong0808";
 
@@ -40,7 +40,7 @@ public class QuanLySinhVien extends JPanel {
 		setBounds(81, 11, 895, 652);
 		setLayout(null);
 
-		currentPanel = this; // Panel hiện tại là chính nó
+		currentPanel = this;
 
 		// Tiêu đề
 		JLabel lblNewLabel = new JLabel("QUẢN LÝ SINH VIÊN");
@@ -82,16 +82,12 @@ public class QuanLySinhVien extends JPanel {
 		MaSV_text.setBounds(271, 74, 321, 40);
 		add(MaSV_text);
 
-		ImageIcon icon = null;
-		icon = new ImageIcon(getClass().getResource("/Icon/find.png"));
-		Image scaledImage = icon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
-		icon = new ImageIcon(scaledImage);
-		JButton btnTimKiem = new JButton("Tìm Kiếm", icon);
-		btnTimKiem.setFont(new Font("Times New Roman", Font.BOLD, 14));
-		btnTimKiem.setForeground(Color.BLACK);
-		btnTimKiem.setBounds(610, 75, 131, 40);
-		btnTimKiem.setHorizontalTextPosition(SwingConstants.RIGHT);
+		JButton btnTimKiem = new JButton("Tìm Kiếm");
 		btnTimKiem.setVerticalTextPosition(SwingConstants.CENTER);
+		btnTimKiem.setHorizontalTextPosition(SwingConstants.RIGHT);
+		btnTimKiem.setForeground(Color.BLACK);
+		btnTimKiem.setFont(new Font("Times New Roman", Font.BOLD, 14));
+		btnTimKiem.setBounds(612, 74, 117, 40);
 		add(btnTimKiem);
 
 		JButton btn_TTSV = new JButton("THÔNG TIN CHI TIẾT");
@@ -172,15 +168,41 @@ public class QuanLySinhVien extends JPanel {
 		currentPanel.add(addStudentPanel);
 		currentPanel.revalidate();
 		currentPanel.repaint();
+
+		// Thêm nút Quay lại để trở về giao diện QuanLySinhVien
+		JButton btnBack = new JButton("QUAY LẠI");
+		btnBack.setFont(new Font("Times New Roman", Font.BOLD, 14));
+		btnBack.setBackground(new Color(255, 204, 0));
+		btnBack.setForeground(Color.BLACK);
+		btnBack.setBounds(10, 10, 100, 30);
+		addStudentPanel.add(btnBack);
+
+		btnBack.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// Trở lại giao diện QuanLySinhVien
+				currentPanel.removeAll();
+				currentPanel.add(MaSV_text);
+				currentPanel.add(table.getTableHeader());
+				currentPanel.add(table);
+				currentPanel.add(new JScrollPane(table));
+				currentPanel.revalidate();
+				currentPanel.repaint();
+				loadStudentData(); // Tải lại dữ liệu
+			}
+		});
 	}
 
 	// Phương thức tải dữ liệu sinh viên từ database
 	private void loadStudentData() {
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
 		try {
-			Connection conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
-			Statement stmt = conn.createStatement();
+			conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+			stmt = conn.createStatement();
 			String sql = "SELECT mssv, hoten, ngaysinh, gioitinh, lop, email FROM students";
-			ResultSet rs = stmt.executeQuery(sql);
+			rs = stmt.executeQuery(sql);
 
 			tableModel.setRowCount(0);
 
@@ -193,19 +215,25 @@ public class QuanLySinhVien extends JPanel {
 				String gioitinh = rs.getString("gioitinh");
 				String lop = rs.getString("lop");
 				String email = rs.getString("email");
-				String chuyennganh = ""; // Chuyên ngành không có trong bảng students
+				String chuyennganh = "";
 
 				tableModel.addRow(new Object[] { mssv, hoten, ngaysinh, gioitinh, lop, chuyennganh, email });
 			}
-
-			rs.close();
-			stmt.close();
-			conn.close();
-
 		} catch (SQLException e) {
 			JOptionPane.showMessageDialog(this, "Lỗi khi tải dữ liệu: " + e.getMessage(), "Lỗi",
 					JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (stmt != null)
+					stmt.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException closeEx) {
+				closeEx.printStackTrace();
+			}
 		}
 	}
 
@@ -219,12 +247,15 @@ public class QuanLySinhVien extends JPanel {
 			return;
 		}
 
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
 		try {
-			Connection conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+			conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
 			String sql = "SELECT mssv, hoten, ngaysinh, gioitinh, lop, email FROM students WHERE mssv = ?";
-			PreparedStatement pstmt = conn.prepareStatement(sql);
+			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, mssv);
-			ResultSet rs = pstmt.executeQuery();
+			rs = pstmt.executeQuery();
 
 			tableModel.setRowCount(0);
 
@@ -243,15 +274,21 @@ public class QuanLySinhVien extends JPanel {
 				JOptionPane.showMessageDialog(this, "Không tìm thấy sinh viên với MSSV: " + mssv, "Thông báo",
 						JOptionPane.INFORMATION_MESSAGE);
 			}
-
-			rs.close();
-			pstmt.close();
-			conn.close();
-
 		} catch (SQLException e) {
 			JOptionPane.showMessageDialog(this, "Lỗi khi tìm kiếm: " + e.getMessage(), "Lỗi",
 					JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (pstmt != null)
+					pstmt.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException closeEx) {
+				closeEx.printStackTrace();
+			}
 		}
 	}
 
@@ -269,16 +306,29 @@ public class QuanLySinhVien extends JPanel {
 				"Xác nhận xóa", JOptionPane.YES_NO_OPTION);
 
 		if (confirm == JOptionPane.YES_OPTION) {
+			Connection conn = null;
+			PreparedStatement pstmtBaitap = null;
+			PreparedStatement pstmtCourses = null;
+			PreparedStatement pstmtStudents = null;
 			try {
-				Connection conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+				conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+				conn.setAutoCommit(false);
 
+				// Xóa bản ghi trong bảng baitap
+				String sqlBaitap = "DELETE FROM baitap WHERE mssv = ?";
+				pstmtBaitap = conn.prepareStatement(sqlBaitap);
+				pstmtBaitap.setString(1, mssv);
+				pstmtBaitap.executeUpdate();
+
+				// Xóa bản ghi trong bảng courses
 				String sqlCourses = "DELETE FROM courses WHERE mssv = ?";
-				PreparedStatement pstmtCourses = conn.prepareStatement(sqlCourses);
+				pstmtCourses = conn.prepareStatement(sqlCourses);
 				pstmtCourses.setString(1, mssv);
 				pstmtCourses.executeUpdate();
 
+				// Xóa bản ghi trong bảng students
 				String sqlStudents = "DELETE FROM students WHERE mssv = ?";
-				PreparedStatement pstmtStudents = conn.prepareStatement(sqlStudents);
+				pstmtStudents = conn.prepareStatement(sqlStudents);
 				pstmtStudents.setString(1, mssv);
 				int rowsAffected = pstmtStudents.executeUpdate();
 
@@ -291,14 +341,34 @@ public class QuanLySinhVien extends JPanel {
 							JOptionPane.ERROR_MESSAGE);
 				}
 
-				pstmtCourses.close();
-				pstmtStudents.close();
-				conn.close();
+				conn.commit();
 
 			} catch (SQLException e) {
 				JOptionPane.showMessageDialog(this, "Lỗi khi xóa sinh viên: " + e.getMessage(), "Lỗi",
 						JOptionPane.ERROR_MESSAGE);
 				e.printStackTrace();
+				try {
+					if (conn != null) {
+						conn.rollback();
+					}
+				} catch (SQLException rollbackEx) {
+					rollbackEx.printStackTrace();
+				}
+			} finally {
+				try {
+					if (pstmtBaitap != null)
+						pstmtBaitap.close();
+					if (pstmtCourses != null)
+						pstmtCourses.close();
+					if (pstmtStudents != null)
+						pstmtStudents.close();
+					if (conn != null) {
+						conn.setAutoCommit(true);
+						conn.close();
+					}
+				} catch (SQLException closeEx) {
+					closeEx.printStackTrace();
+				}
 			}
 		}
 	}
@@ -325,12 +395,15 @@ public class QuanLySinhVien extends JPanel {
 		String soTin = "";
 		String thoiGian = "";
 
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
 		try {
-			Connection conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+			conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
 			String sql = "SELECT monhoc, mamon, sotin, thoigian FROM courses WHERE mssv = ?";
-			PreparedStatement pstmt = conn.prepareStatement(sql);
+			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, mssv);
-			ResultSet rs = pstmt.executeQuery();
+			rs = pstmt.executeQuery();
 
 			if (rs.next()) {
 				monHoc = rs.getString("monhoc") != null ? rs.getString("monhoc") : "";
@@ -338,15 +411,21 @@ public class QuanLySinhVien extends JPanel {
 				soTin = String.valueOf(rs.getInt("sotin"));
 				thoiGian = rs.getString("thoigian") != null ? rs.getString("thoigian") : "";
 			}
-
-			rs.close();
-			pstmt.close();
-			conn.close();
-
 		} catch (SQLException e) {
 			JOptionPane.showMessageDialog(this, "Lỗi khi lấy thông tin khóa học: " + e.getMessage(), "Lỗi",
 					JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (pstmt != null)
+					pstmt.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException closeEx) {
+				closeEx.printStackTrace();
+			}
 		}
 
 		// Gọi ThongTinSinhVien với đầy đủ thông tin
@@ -401,6 +480,7 @@ public class QuanLySinhVien extends JPanel {
 			} catch (IOException ex) {
 				JOptionPane.showMessageDialog(this, "Lỗi khi xuất file: " + ex.getMessage(), "Lỗi",
 						JOptionPane.ERROR_MESSAGE);
+				ex.printStackTrace();
 			}
 		}
 
@@ -409,5 +489,24 @@ public class QuanLySinhVien extends JPanel {
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
+	}
+	public int getStudentCount() {
+	    int count = 0;
+	    try {
+	        Connection conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+	        String sql = "SELECT COUNT(*) FROM students";
+	        Statement stmt = conn.createStatement();
+	        ResultSet rs = stmt.executeQuery(sql);
+	        if (rs.next()) {
+	            count = rs.getInt(1);
+	        }
+	        rs.close();
+	        stmt.close();
+	        conn.close();
+	    } catch (SQLException e) {
+	        JOptionPane.showMessageDialog(this, "Lỗi khi đếm sinh viên: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+	        e.printStackTrace();
+	    }
+	    return count;
 	}
 }

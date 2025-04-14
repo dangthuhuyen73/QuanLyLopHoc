@@ -88,7 +88,7 @@ public class BaiTap extends JFrame {
 		lblMonHoc.setBounds(22, 133, 114, 30);
 		contentPane.add(lblMonHoc);
 
-		Mon_comboBox = new JComboBox<>(new String[] { "", "Cảm Biến", "Java", "Android" });
+		Mon_comboBox = new JComboBox<>(new String[] { "", "Lập Trình Hướng Đối Tượng", "Hệ Thống nhúng IOT", "Hệ Thống Cảm Biến","Điện Toán Đám Mây","Phát Triển ứng Dụng","Tiếng Anh" });
 		Mon_comboBox.setFont(new Font("Times New Roman", Font.PLAIN, 15));
 		Mon_comboBox.setBounds(112, 132, 300, 30);
 		contentPane.add(Mon_comboBox);

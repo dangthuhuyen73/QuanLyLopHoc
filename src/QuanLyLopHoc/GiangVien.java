@@ -118,7 +118,7 @@ public class GiangVien extends JPanel {
 		comboBoxMonHoc = new JComboBox<>();
 		comboBoxMonHoc.setBounds(212, 317, 586, 29);
 		panel.add(comboBoxMonHoc);
-		comboBoxMonHoc.setModel(new DefaultComboBoxModel<>(new String[] { "", "Cảm Biến", "Java", "Android" }));
+		comboBoxMonHoc.setModel(new DefaultComboBoxModel<>(new String[] { "", "Lập Trình Hướng Đối Tượng", "Hệ Thống nhúng IOT", "Hệ Thống Cảm Biến","Điện Toán Đám Mây","Phát Triển ứng Dụng","Tiếng Anh" }));
 		comboBoxMonHoc.setFont(new Font("Times New Roman", Font.PLAIN, 15));
 
 		JLabel lblMaMon = new JLabel("MÃ MÔN:");
@@ -135,12 +135,18 @@ public class GiangVien extends JPanel {
 		// Xử lý khi chọn môn học
 		comboBoxMonHoc.addItemListener(e -> {
 			String selectedSubject = (String) comboBoxMonHoc.getSelectedItem();
-			if ("Cảm Biến".equals(selectedSubject)) {
-				txtMaMon.setText("iot");
-			} else if ("Java".equals(selectedSubject)) {
-				txtMaMon.setText("jv");
-			} else if ("Android".equals(selectedSubject)) {
-				txtMaMon.setText("ad");
+			if ("Lập Trình Hướng Đối Tượng".equals(selectedSubject)) {
+				txtMaMon.setText("TEL1448");
+			} else if ("Hệ Thống nhúng IOT".equals(selectedSubject)) {
+				txtMaMon.setText("TEL1457");
+			} else if ("Hệ Thống Cảm Biến".equals(selectedSubject)) {
+				txtMaMon.setText("TEL1467");
+			} else if ("Điện Toán Đám Mây".equals(selectedSubject)) {
+				txtMaMon.setText("TEL1447");
+			} else if ("Phát Triển ứng Dụng".equals(selectedSubject)) {
+				txtMaMon.setText("TEL1461");
+			} else if ("Tiếng Anh".equals(selectedSubject)) {
+				txtMaMon.setText("BAS1160");
 			} else {
 				txtMaMon.setText("");
 			}

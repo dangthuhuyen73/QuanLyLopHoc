@@ -87,7 +87,7 @@ public class QuanLyBaiTap extends JPanel {
 
 		// ComboBox Tìm kiếm môn học
 		TimMon_comboBox = new JComboBox<>();
-		TimMon_comboBox.setModel(new DefaultComboBoxModel<>(new String[] { "", "Cảm Biến", "Java", "Android" }));
+		TimMon_comboBox.setModel(new DefaultComboBoxModel<>(new String[] { "", "Lập Trình Hướng Đối Tượng", "Hệ Thống nhúng IOT", "Hệ Thống Cảm Biến","Điện Toán Đám Mây","Phát Triển ứng Dụng","Tiếng Anh" }));
 		TimMon_comboBox.setFont(new Font("Times New Roman", Font.PLAIN, 15));
 		TimMon_comboBox.setBounds(236, 72, 296, 40);
 		add(TimMon_comboBox);
@@ -462,4 +462,36 @@ public class QuanLyBaiTap extends JPanel {
 			}
 		}
 	}
+	// Phương thức đếm số lượng bài tập
+    public int getAssignmentCount() {
+        int count = 0;
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+            String sql = "SELECT COUNT(*) FROM Baitap";
+            pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Lỗi khi đếm bài tập: " + ex.getMessage(), "Lỗi",
+                    JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+        } finally {
+            try {
+                if (rs != null)
+                    rs.close();
+                if (pstmt != null)
+                    pstmt.close();
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException closeEx) {
+                closeEx.printStackTrace();
+            }
+        }
+        return count;
+    }
 }

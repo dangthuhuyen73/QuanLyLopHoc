@@ -108,7 +108,7 @@ public class ThongTinSinhVien extends JFrame {
 		MSSV_text1.setFont(new Font("Times New Roman", Font.PLAIN, 15));
 		ThongTinSinhVien.add(MSSV_text1);
 
-		Lop_comboBox_1 = new JComboBox<>(new String[] { "", "D21CQVTHI-01", "D21CQVTVT-01", "D21CQVT-01N" });
+		Lop_comboBox_1 = new JComboBox<>(new String[] { "", "D21CQVTHI01-N", "D21CQVTVT-01", "D21CQVTMD01-N","D22CQVT01-N","D23CQVTMD01-N" });
 		Lop_comboBox_1.setBounds(539, 197, 310, 30);
 		Lop_comboBox_1.setEnabled(false);
 		Lop_comboBox_1.setFont(new Font("Times New Roman", Font.PLAIN, 15));
@@ -133,7 +133,7 @@ public class ThongTinSinhVien extends JFrame {
 		Email_text1.setFont(new Font("Times New Roman", Font.PLAIN, 15));
 		ThongTinSinhVien.add(Email_text1);
 
-		MonHoc_comboBox1 = new JComboBox<>(new String[] { "", "Cảm Biến", "Java", "Android" });
+		MonHoc_comboBox1 = new JComboBox<>(new String[] { "", "Lập Trình Hướng Đối Tượng", "Hệ Thống nhúng IOT", "Hệ Thống Cảm Biến","Điện Toán Đám Mây","Phát Triển ứng Dụng","Tiếng Anh" });
 		MonHoc_comboBox1.setBounds(539, 350, 310, 30);
 		MonHoc_comboBox1.setEnabled(false);
 		MonHoc_comboBox1.setFont(new Font("Times New Roman", Font.PLAIN, 15));
@@ -357,18 +357,30 @@ public class ThongTinSinhVien extends JFrame {
 		// Xử lý khi chọn môn học
 		MonHoc_comboBox1.addItemListener(e -> {
 			String selectedSubject = (String) MonHoc_comboBox1.getSelectedItem();
-			if ("Cảm Biến".equals(selectedSubject)) {
-				MaMon_text1.setText("iot");
+			if ("Lập Trình Hướng Đối Tượng".equals(selectedSubject)) {
+				MaMon_text1.setText("TEL1448");
 				SoTin_text1.setText("3");
-				ThoiGian_text1.setText("4/5-6-8");
-			} else if ("Java".equals(selectedSubject)) {
-				MaMon_text1.setText("jv");
+				ThoiGian_text1.setText("Thứ 3,Tiết 7-10");
+			} else if ("Hệ Thống nhúng IOT".equals(selectedSubject)) {
+				MaMon_text1.setText("TEL1457");
+				SoTin_text1.setText("3");
+				ThoiGian_text1.setText("Thứ 2,Tiết 7-10");
+			} else if ("Hệ Thống Cảm Biến".equals(selectedSubject)) {
+				MaMon_text1.setText("TEL1467");
+				SoTin_text1.setText("3");
+				ThoiGian_text1.setText("Thứ 2,Tiết 1-4");
+			} else if ("Điện Toán Đám Mây".equals(selectedSubject)) {
+				MaMon_text1.setText("TEL1447");
 				SoTin_text1.setText("2");
-				ThoiGian_text1.setText("6/7-7/8");
-			} else if ("Android".equals(selectedSubject)) {
-				MaMon_text1.setText("ad");
+				ThoiGian_text1.setText("Thứ 5,Tiết 7-10");
+			} else if ("Phát Triển ứng Dụng".equals(selectedSubject)) {
+				MaMon_text1.setText("TEL1461");
 				SoTin_text1.setText("3");
-				ThoiGian_text1.setText("7/7-7/9");
+				ThoiGian_text1.setText("Thứ 4,Tiết 7-10");
+			} else if ("Tiếng Anh".equals(selectedSubject)) {
+				MaMon_text1.setText("BAS1160");
+				SoTin_text1.setText("4");
+				ThoiGian_text1.setText("Thứ 7,Tiết 1-4");
 			} else {
 				MaMon_text1.setText("");
 				SoTin_text1.setText("");

@@ -27,13 +27,17 @@ public class TrangChu extends JFrame {
     private JLabel monthYearLabel;
     private DefaultTableModel tableModel;
     private Calendar today = Calendar.getInstance();
-   
+    private JPanel panel_SV;
+    private JPanel panel_GV;
+    private JLabel lbl_studentCount; // Lưu trữ JLabel để cập nhật
+    private JLabel lbl_teacherCount; // Lưu trữ JLabel để cập nhật
+    private JLabel lbl_assignmentCount;
 
     public TrangChu() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 1000, 700);
         setLocationRelativeTo(null);
-        
+
         contentPane = new JPanel();
         contentPane.setBackground(new Color(0, 0, 121));
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -129,6 +133,10 @@ public class TrangChu extends JFrame {
                 for (Component comp : initialComponents) {
                     TrangChinh.add(comp);
                 }
+                //cập nhập biến đếm
+                updateStudentCountLabel();
+                updateTeacherCountLabel();
+                updateAssignmentCountLabel();
                 TrangChinh.revalidate();
                 TrangChinh.repaint();
             }
@@ -146,7 +154,7 @@ public class TrangChu extends JFrame {
                 TrangChinh.repaint();
             }
         });
-        
+
         Teach_Button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 resetButtonColors();
@@ -202,7 +210,7 @@ public class TrangChu extends JFrame {
         TrangChuLabel.setForeground(new Color(255, 255, 255));
         TrangChuLabel.setBounds(10, 26, 161, 43);
         TrangChinh.add(TrangChuLabel);
-        
+
         JButton login_bnt = new JButton();
         login_bnt.setBorderPainted(false);
         login_bnt.setContentAreaFilled(false);
@@ -215,17 +223,13 @@ public class TrangChu extends JFrame {
         login_bnt.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Hiển thị thông báo xác nhận
-                int confirm = JOptionPane.showConfirmDialog(TrangChu.this, 
-                        "Bạn có muốn thoát trang không?", 
-                        "Xác nhận thoát", 
-                        JOptionPane.YES_NO_OPTION, 
+                int confirm = JOptionPane.showConfirmDialog(TrangChu.this,
+                        "Bạn có muốn thoát trang không?",
+                        "Xác nhận thoát",
+                        JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE);
-                
                 if (confirm == JOptionPane.YES_OPTION) {
-                    // Đóng cửa sổ hiện tại
                     dispose();
-                    // Mở cửa sổ đăng nhập
                     EventQueue.invokeLater(new Runnable() {
                         public void run() {
                             try {
@@ -237,10 +241,9 @@ public class TrangChu extends JFrame {
                         }
                     });
                 }
-                // Nếu chọn "Không", không làm gì cả
             }
         });
-        
+
         JButton ThongBao_bnt = new JButton();
         ThongBao_bnt.setBorderPainted(false);
         ThongBao_bnt.setContentAreaFilled(false);
@@ -253,14 +256,13 @@ public class TrangChu extends JFrame {
         ThongBao_bnt.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Hiển thị thông báo
-                JOptionPane.showMessageDialog(TrangChu.this, 
-                        "Bạn không có thông báo mới!", 
-                        "Thông Báo", 
+                JOptionPane.showMessageDialog(TrangChu.this,
+                        "Bạn không có thông báo mới!",
+                        "Thông Báo",
                         JOptionPane.INFORMATION_MESSAGE);
             }
         });
-        
+
         JButton btn_Vie = new JButton("Vie", null);
         btn_Vie.setBorderPainted(false);
         btn_Vie.setContentAreaFilled(false);
@@ -278,35 +280,35 @@ public class TrangChu extends JFrame {
         panel_1.setBounds(10, 90, 443, 267);
         TrangChinh.add(panel_1);
         panel_1.setLayout(null);
-        
-        JLabel lblNewLabel_1 = new JLabel("NHÓM 9");
+
+        JLabel lblNewLabel_1 = new JLabel("NHÓM 8");
         lblNewLabel_1.setFont(new Font("Times New Roman", Font.BOLD, 25));
         lblNewLabel_1.setForeground(new Color(255, 0, 0));
         lblNewLabel_1.setBounds(173, 11, 101, 24);
         panel_1.add(lblNewLabel_1);
-        
+
         JLabel lblNewLabel_2 = new JLabel("QUẢN LÝ LỚP HỌC ONLINE");
         lblNewLabel_2.setFont(new Font("Times New Roman", Font.BOLD, 20));
         lblNewLabel_2.setForeground(new Color(0, 0, 160));
         lblNewLabel_2.setBounds(88, 46, 284, 24);
         panel_1.add(lblNewLabel_2);
-        
+
         JLabel lblNewLabel_3 = new JLabel("1. Đặng Thu Huyền                  - N21DCVT040");
         lblNewLabel_3.setFont(new Font("Times New Roman", Font.BOLD, 15));
         lblNewLabel_3.setBounds(66, 97, 322, 24);
         panel_1.add(lblNewLabel_3);
-        
-        JLabel lblNewLabel_4 = new JLabel("2. Trần Minh Thương             -  N21DCVT101");
+
+        JLabel lblNewLabel_4 = new JLabel("2. Trần Minh Thương             - N21DCVT101");
         lblNewLabel_4.setFont(new Font("Times New Roman", Font.BOLD, 15));
         lblNewLabel_4.setBounds(66, 132, 322, 28);
         panel_1.add(lblNewLabel_4);
-        
-        JLabel lblNewLabel_5 = new JLabel("3. Trần Nguyễn Tuấn Khanh  - N21DCVT045");
+
+        JLabel lblNewLabel_5 = new JLabel("3. Trần Nguyễn Tuấn Khanh  - N21DCVT044");
         lblNewLabel_5.setFont(new Font("Times New Roman", Font.BOLD, 15));
         lblNewLabel_5.setBounds(66, 171, 337, 28);
         panel_1.add(lblNewLabel_5);
-        
-        JLabel lblNewLabel_6 = new JLabel("4. Nguyễn Đình lân                  - N21DCVT0");
+
+        JLabel lblNewLabel_6 = new JLabel("4. Nguyễn Đình lân                  - N21DCVT057");
         lblNewLabel_6.setFont(new Font("Times New Roman", Font.BOLD, 15));
         lblNewLabel_6.setBounds(66, 213, 322, 24);
         panel_1.add(lblNewLabel_6);
@@ -315,74 +317,98 @@ public class TrangChu extends JFrame {
         panel_1_1.setBounds(10, 368, 875, 259);
         TrangChinh.add(panel_1_1);
         panel_1_1.setLayout(null);
-        
-        JPanel panel_GV = new JPanel();
+
+        panel_GV = new JPanel();
         panel_GV.setBackground(new Color(255, 138, 21));
         panel_GV.setBounds(300, 48, 283, 187);
         panel_1_1.add(panel_GV);
         panel_GV.setLayout(null);
-        
+
         JPanel panel_2_1 = new JPanel();
         panel_2_1.setBounds(142, 34, 4, 119);
         panel_GV.add(panel_2_1);
-        
+
         JLabel lbl_GV = new JLabel("GIẢNG VIÊN");
         lbl_GV.setForeground(Color.WHITE);
         lbl_GV.setFont(new Font("Times New Roman", Font.BOLD, 15));
         lbl_GV.setBounds(156, 110, 100, 26);
         panel_GV.add(lbl_GV);
-        
+
         ImageIcon gvIcon = new ImageIcon(getClass().getResource("/Icon/teacher.png"));
         Image scaledShopp2 = gvIcon.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH);
         JLabel gv = new JLabel(new ImageIcon(scaledShopp2));
         gv.setBounds(32, 51, 85, 85);
         panel_GV.add(gv);
-        
-        JPanel panel_SV = new JPanel();
+
+        // Thêm JLabel để hiển thị số lượng giảng viên
+        QuanLyGiangVien quanLyGiangVien = new QuanLyGiangVien();
+        int teacherCount = quanLyGiangVien.getTeacherCount();
+        lbl_teacherCount = new JLabel(String.valueOf(teacherCount));
+        lbl_teacherCount.setForeground(new Color(255, 255, 255));
+        lbl_teacherCount.setFont(new Font("Times New Roman", Font.BOLD, 40));
+        lbl_teacherCount.setBounds(180, 51, 64, 48);
+        panel_GV.add(lbl_teacherCount);
+
+        panel_SV = new JPanel();
         panel_SV.setBackground(new Color(255, 36, 36));
         panel_SV.setBounds(10, 48, 280, 187);
         panel_1_1.add(panel_SV);
         panel_SV.setLayout(null);
-        
-        
+
         JLabel lbl_sv = new JLabel("SINH VIÊN");
         lbl_sv.setForeground(new Color(255, 255, 255));
         lbl_sv.setFont(new Font("Times New Roman", Font.BOLD, 15));
         lbl_sv.setBounds(152, 111, 100, 26);
         panel_SV.add(lbl_sv);
-        
+
         ImageIcon svIcon = new ImageIcon(getClass().getResource("/Icon/sv.png"));
         Image scaledShopp1 = svIcon.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH);
         JLabel sv = new JLabel(new ImageIcon(scaledShopp1));
         sv.setBounds(24, 52, 85, 85);
         panel_SV.add(sv);
-        
+
         JPanel panel_2_1_1 = new JPanel();
         panel_2_1_1.setBounds(138, 35, 4, 119);
         panel_SV.add(panel_2_1_1);
-        
+
+        // Thêm JLabel để hiển thị số lượng sinh viên
+        QuanLySinhVien quanLySinhVien = new QuanLySinhVien();
+        int studentCount = quanLySinhVien.getStudentCount();
+        lbl_studentCount = new JLabel(String.valueOf(studentCount));
+        lbl_studentCount.setForeground(new Color(255, 255, 255));
+        lbl_studentCount.setFont(new Font("Times New Roman", Font.BOLD, 40));
+        lbl_studentCount.setBounds(176, 52, 59, 48);
+        panel_SV.add(lbl_studentCount);
+
         JPanel panel_BT = new JPanel();
         panel_BT.setBackground(new Color(38, 147, 255));
         panel_BT.setBounds(593, 48, 272, 187);
         panel_1_1.add(panel_BT);
         panel_BT.setLayout(null);
-        
+
         JPanel panel_2_2 = new JPanel();
         panel_2_2.setBounds(144, 37, 4, 119);
         panel_BT.add(panel_2_2);
-        
+
         JLabel lbl_GV_1 = new JLabel("BÀI TẬP");
         lbl_GV_1.setForeground(Color.WHITE);
         lbl_GV_1.setFont(new Font("Times New Roman", Font.BOLD, 15));
         lbl_GV_1.setBounds(158, 111, 100, 26);
         panel_BT.add(lbl_GV_1);
-        
+
         ImageIcon btIcon = new ImageIcon(getClass().getResource("/Icon/book.png"));
         Image scaledShopp3 = btIcon.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH);
         JLabel bt = new JLabel(new ImageIcon(scaledShopp3));
         bt.setBounds(36, 53, 85, 85);
         panel_BT.add(bt);
         
+        lbl_assignmentCount = new JLabel("0");
+        lbl_assignmentCount.setForeground(new Color(255, 255, 255));
+        lbl_assignmentCount.setFont(new Font("Times New Roman", Font.BOLD, 40));
+        lbl_assignmentCount.setBounds(176, 53, 60, 37);
+        panel_BT.add(lbl_assignmentCount);
+        updateAssignmentCountLabel();
+
         JLabel lblNewLabel = new JLabel("THỐNG KÊ");
         lblNewLabel.setFont(new Font("Times New Roman", Font.BOLD, 20));
         lblNewLabel.setForeground(new Color(0, 0, 160));
@@ -390,7 +416,7 @@ public class TrangChu extends JFrame {
         lblNewLabel.setBounds(392, 11, 126, 26);
         panel_1_1.add(lblNewLabel);
 
-     // Khởi tạo panel_1_2 cho lịch
+        // Khởi tạo panel_1_2 cho lịch
         JPanel panel_1_2 = new JPanel();
         panel_1_2.setBounds(468, 90, 417, 267);
         panel_1_2.setBackground(new Color(255, 255, 255));
@@ -403,15 +429,14 @@ public class TrangChu extends JFrame {
         headerPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 5));
         headerPanel.setBackground(new Color(255, 204, 0));
         headerPanel.setPreferredSize(new Dimension(417, 35));
-       
 
         JButton prevButton = new JButton("<");
-        prevButton.setFont(new Font("Times New Roman", Font.BOLD, 18)); // Tăng cỡ font
+        prevButton.setFont(new Font("Times New Roman", Font.BOLD, 18));
         prevButton.setBackground(defaultColor);
         prevButton.setForeground(new Color(0, 0, 121));
-        prevButton.setPreferredSize(new Dimension(40, 25)); // Tăng kích thước nút
-        prevButton.setBorder(new EmptyBorder(0, 0, 0, 0)); // Xóa viền mặc định
-        prevButton.setHorizontalAlignment(SwingConstants.CENTER); // Căn giữa
+        prevButton.setPreferredSize(new Dimension(40, 25));
+        prevButton.setBorder(new EmptyBorder(0, 0, 0, 0));
+        prevButton.setHorizontalAlignment(SwingConstants.CENTER);
         prevButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -450,7 +475,7 @@ public class TrangChu extends JFrame {
         tableModel = new DefaultTableModel(null, columns) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Không cho phép chỉnh sửa ô
+                return false;
             }
         };
         calendarTable = new JTable(tableModel);
@@ -463,7 +488,7 @@ public class TrangChu extends JFrame {
         calendarTable.getTableHeader().setBackground(new Color(200, 200, 200));
         calendarTable.getTableHeader().setForeground(new Color(0, 0, 121));
 
-     // Tùy chỉnh renderer để khoanh tròn ngày hiện tại
+        // Tùy chỉnh renderer để khoanh tròn ngày hiện tại
         calendarTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
@@ -481,7 +506,6 @@ public class TrangChu extends JFrame {
                         cellCal.get(Calendar.DAY_OF_MONTH) == today.get(Calendar.DAY_OF_MONTH)) {
                         c.setForeground(Color.RED);
                         c.setFont(new Font("Times New Roman", Font.BOLD, 15));
-             
                     }
                 }
                 setHorizontalAlignment(CENTER);
@@ -500,11 +524,11 @@ public class TrangChu extends JFrame {
                         cellCal.get(Calendar.DAY_OF_MONTH) == today.get(Calendar.DAY_OF_MONTH)) {
                         Graphics2D g2d = (Graphics2D) g.create();
                         g2d.setColor(new Color(0, 0, 121));
-                        g2d.setStroke(new BasicStroke(1)); // Độ dày vòng tròn
-                        int size = Math.min(getWidth(), getHeight()) - 10; // Kích thước vòng tròn
+                        g2d.setStroke(new BasicStroke(1));
+                        int size = Math.min(getWidth(), getHeight()) - 10;
                         int x = (getWidth() - size) / 2;
                         int y = (getHeight() - size) / 2;
-                        g2d.drawOval(x, y, size, size); // Vẽ vòng tròn
+                        g2d.drawOval(x, y, size, size);
                         g2d.dispose();
                     }
                 }
@@ -525,23 +549,17 @@ public class TrangChu extends JFrame {
     }
 
     private void updateCalendar() {
-        // Cập nhật nhãn tháng/năm
         monthYearLabel.setText(monthYearFormat.format(calendar.getTime()));
-
-        // Xóa bảng
         tableModel.setRowCount(0);
 
-        // Lấy ngày đầu tháng và số ngày trong tháng
         Calendar tempCal = (Calendar) calendar.clone();
         tempCal.set(Calendar.DAY_OF_MONTH, 1);
-        int firstDayOfWeek = tempCal.get(Calendar.DAY_OF_WEEK) - 1; // 0=CN, 1=T2,...
+        int firstDayOfWeek = tempCal.get(Calendar.DAY_OF_WEEK) - 1;
         int daysInMonth = tempCal.getActualMaximum(Calendar.DAY_OF_MONTH);
 
-        // Tính số hàng cần thiết
         int totalCells = firstDayOfWeek + daysInMonth;
         int rows = (int) Math.ceil(totalCells / 7.0);
 
-        // Điền dữ liệu vào bảng
         int day = 1;
         for (int row = 0; row < rows; row++) {
             String[] rowData = new String[7];
@@ -579,6 +597,39 @@ public class TrangChu extends JFrame {
             button.setBackground(null);
         }
     }
+//cập nhạt sinh viên
+    private void updateStudentCountLabel() {
+        if (lbl_studentCount != null) {
+            QuanLySinhVien quanLySinhVien = new QuanLySinhVien();
+            int studentCount = quanLySinhVien.getStudentCount();
+            lbl_studentCount.setText(String.valueOf(studentCount));
+        }
+    }
+    //cập nhap giảng vien
+
+    private void updateTeacherCountLabel() {
+        if (lbl_teacherCount != null) {
+            QuanLyGiangVien quanLyGiangVien = new QuanLyGiangVien();
+            int teacherCount = quanLyGiangVien.getTeacherCount();
+            lbl_teacherCount.setText(String.valueOf(teacherCount));
+        }
+    }
+    //cạp nhât bài tập
+    private void updateAssignmentCountLabel() {
+        if (lbl_assignmentCount == null) {
+            System.err.println("lbl_assignmentCount is null");
+            return;
+        }
+        try {
+            QuanLyBaiTap quanLyBaiTap = new QuanLyBaiTap();
+            int assignmentCount = quanLyBaiTap.getAssignmentCount();
+            lbl_assignmentCount.setText(String.valueOf(assignmentCount));
+        } catch (Exception e) {
+            System.err.println("Error updating assignment count: " + e.getMessage());
+            lbl_assignmentCount.setText("0");
+        }
+    }
+
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
             public void run() {

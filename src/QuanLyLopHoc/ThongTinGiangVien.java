@@ -167,22 +167,28 @@ public class ThongTinGiangVien extends JFrame {
         Mon_ComboBox = new JComboBox<>();
         Mon_ComboBox.setBounds(539, 363, 310, 30);
         Mon_ComboBox.setFont(new Font("Times New Roman", Font.PLAIN, 15));
-        Mon_ComboBox.setModel(new DefaultComboBoxModel<>(new String[] {"", "Cảm Biến", "Java", "Android"}));
+        Mon_ComboBox.setModel(new DefaultComboBoxModel<>(new String[] {"", "Lập Trình Hướng Đối Tượng", "Hệ Thống nhúng IOT", "Hệ Thống Cảm Biến","Điện Toán Đám Mây","Phát Triển ứng Dụng","Tiếng Anh"}));
         Mon_ComboBox.setEnabled(false);
         ThongTinGiangVienPanel.add(Mon_ComboBox);
 
         // Xử lý khi chọn môn học để cập nhật mã môn
         Mon_ComboBox.addItemListener(e -> {
             String selectedSubject = (String) Mon_ComboBox.getSelectedItem();
-            if ("Cảm Biến".equals(selectedSubject)) {
-                MaMon_text1.setText("iot");
-            } else if ("Java".equals(selectedSubject)) {
-                MaMon_text1.setText("jv");
-            } else if ("Android".equals(selectedSubject)) {
-                MaMon_text1.setText("ad");
-            } else {
-                MaMon_text1.setText("");
-            }
+            if ("Lập Trình Hướng Đối Tượng".equals(selectedSubject)) {
+            	MaMon_text1.setText("TEL1448");
+			} else if ("Hệ Thống nhúng IOT".equals(selectedSubject)) {
+				MaMon_text1.setText("TEL1457");
+			} else if ("Hệ Thống Cảm Biến".equals(selectedSubject)) {
+				MaMon_text1.setText("TEL1467");
+			} else if ("Điện Toán Đám Mây".equals(selectedSubject)) {
+				MaMon_text1.setText("TEL1447");
+			} else if ("Phát Triển ứng Dụng".equals(selectedSubject)) {
+				MaMon_text1.setText("TEL1461");
+			} else if ("Tiếng Anh".equals(selectedSubject)) {
+				MaMon_text1.setText("BAS1160");
+			} else {
+				MaMon_text1.setText("");
+			}
         });
 
         // Nút SỬA
