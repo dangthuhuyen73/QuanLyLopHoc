@@ -183,41 +183,42 @@ public class GiangVien extends JPanel {
 					return;
 				}
 
-				// Kiểm tra mã GV đã tồn tại
-				Connection conn = null;
-				PreparedStatement pstmt = null;
-				ResultSet rs = null;
-				try {
-					conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
-					String checkSql = "SELECT ma_gv FROM giang_vien WHERE ma_gv = ?";
-					pstmt = conn.prepareStatement(checkSql);
-					pstmt.setString(1, maGV);
-					rs = pstmt.executeQuery();
+				// Lưu vào database
+                Connection conn = null;
+                PreparedStatement pstmt = null;
+                ResultSet rs = null;
+                try {
+                    conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
 
-					if (rs.next()) {
-						JOptionPane.showMessageDialog(GiangVien.this,
-								"Mã giảng viên '" + maGV + "' đã tồn tại trong database!", "Lỗi",
-								JOptionPane.ERROR_MESSAGE);
-						return;
-					}
+                    // Kiểm tra mã GV đã tồn tại
+                    String checkMaGVSql = "SELECT ma_gv FROM giang_vien WHERE ma_gv = ?";
+                    pstmt = conn.prepareStatement(checkMaGVSql);
+                    pstmt.setString(1, maGV);
+                    rs = pstmt.executeQuery();
 
-					// Kiểm tra định dạng email
-					if (!EMAIL_PATTERN.matcher(email).matches()) {
-						JOptionPane.showMessageDialog(GiangVien.this,
-								"Email phải có định dạng: [chữ/số]@ptithcm.edu.vn!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-						return;
-					}
+                    if (rs.next()) {
+                        JOptionPane.showMessageDialog(GiangVien.this,
+                            "Mã giảng viên '" + maGV + "' đã tồn tại trong database!", 
+                            "Lỗi", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    rs.close();
+                    pstmt.close();
 
-					// Kiểm tra định dạng số điện thoại
-					if (!PHONE_PATTERN.matcher(soDienThoai).matches()) {
-						JOptionPane.showMessageDialog(GiangVien.this,
-								"Số điện thoại phải có 10 chữ số và bắt đầu bằng 0!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-						return;
-					}
+                    // Kiểm tra xem mã môn đã được gán cho giảng viên khác chưa
+                    String checkMonSql = "SELECT ma_gv FROM giang_vien WHERE ma_mon = ?";
+                    pstmt = conn.prepareStatement(checkMonSql);
+                    pstmt.setString(1, maMon);
+                    rs = pstmt.executeQuery();
 
-					// Đóng ResultSet và PreparedStatement trước khi tái sử dụng
-					rs.close();
-					pstmt.close();
+                    if (rs.next()) {
+                        JOptionPane.showMessageDialog(GiangVien.this,
+                            "Môn học '" + monGiangDay + "' đã được gán cho giảng viên khác!", 
+                            "Lỗi", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    rs.close();
+                    pstmt.close();
 
 					// Câu lệnh SQL để insert
 					String insertSql = "INSERT INTO giang_vien (ho_ten, ma_gv, email, so_dien_thoai, mon_giang_day, ma_mon) "

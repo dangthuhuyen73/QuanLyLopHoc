@@ -294,83 +294,101 @@ public class QuanLySinhVien extends JPanel {
 
 	// Phương thức xóa sinh viên
 	private void deleteStudent() {
-		int selectedRow = table.getSelectedRow();
-		if (selectedRow == -1) {
-			JOptionPane.showMessageDialog(this, "Vui lòng chọn một sinh viên để xóa!", "Cảnh báo",
-					JOptionPane.WARNING_MESSAGE);
-			return;
-		}
+	    int selectedRow = table.getSelectedRow();
+	    if (selectedRow == -1) {
+	        JOptionPane.showMessageDialog(this, "Vui lòng chọn một sinh viên để xóa!", "Cảnh báo",
+	                JOptionPane.WARNING_MESSAGE);
+	        return;
+	    }
 
-		String mssv = tableModel.getValueAt(selectedRow, 0).toString();
-		int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc muốn xóa sinh viên với MSSV: " + mssv + "?",
-				"Xác nhận xóa", JOptionPane.YES_NO_OPTION);
+	    String mssv = tableModel.getValueAt(selectedRow, 0).toString();
+	    int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc muốn xóa sinh viên với MSSV: " + mssv + "?",
+	            "Xác nhận xóa", JOptionPane.YES_NO_OPTION);
 
-		if (confirm == JOptionPane.YES_OPTION) {
-			Connection conn = null;
-			PreparedStatement pstmtBaitap = null;
-			PreparedStatement pstmtCourses = null;
-			PreparedStatement pstmtStudents = null;
-			try {
-				conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
-				conn.setAutoCommit(false);
+	    if (confirm == JOptionPane.YES_OPTION) {
+	        Connection conn = null;
+	        PreparedStatement pstmtBaitap = null;
+	        PreparedStatement pstmtCourses = null;
+	        PreparedStatement pstmtDiem = null;
+	        PreparedStatement pstmtDiemDanh = null; // Thêm cho bảng diemdanh
+	        PreparedStatement pstmtStudents = null;
+	        try {
+	            conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+	            conn.setAutoCommit(false);
 
-				// Xóa bản ghi trong bảng baitap
-				String sqlBaitap = "DELETE FROM baitap WHERE mssv = ?";
-				pstmtBaitap = conn.prepareStatement(sqlBaitap);
-				pstmtBaitap.setString(1, mssv);
-				pstmtBaitap.executeUpdate();
+	            // Xóa bản ghi trong bảng baitap
+	            String sqlBaitap = "DELETE FROM baitap WHERE mssv = ?";
+	            pstmtBaitap = conn.prepareStatement(sqlBaitap);
+	            pstmtBaitap.setString(1, mssv);
+	            pstmtBaitap.executeUpdate();
 
-				// Xóa bản ghi trong bảng courses
-				String sqlCourses = "DELETE FROM courses WHERE mssv = ?";
-				pstmtCourses = conn.prepareStatement(sqlCourses);
-				pstmtCourses.setString(1, mssv);
-				pstmtCourses.executeUpdate();
+	            // Xóa bản ghi trong bảng courses
+	            String sqlCourses = "DELETE FROM courses WHERE mssv = ?";
+	            pstmtCourses = conn.prepareStatement(sqlCourses);
+	            pstmtCourses.setString(1, mssv);
+	            pstmtCourses.executeUpdate();
 
-				// Xóa bản ghi trong bảng students
-				String sqlStudents = "DELETE FROM students WHERE mssv = ?";
-				pstmtStudents = conn.prepareStatement(sqlStudents);
-				pstmtStudents.setString(1, mssv);
-				int rowsAffected = pstmtStudents.executeUpdate();
+	            // Xóa bản ghi trong bảng diem
+	            String sqlDiem = "DELETE FROM diem WHERE mssv = ?";
+	            pstmtDiem = conn.prepareStatement(sqlDiem);
+	            pstmtDiem.setString(1, mssv);
+	            pstmtDiem.executeUpdate();
 
-				if (rowsAffected > 0) {
-					tableModel.removeRow(selectedRow);
-					JOptionPane.showMessageDialog(this, "Xóa sinh viên thành công!", "Thông báo",
-							JOptionPane.INFORMATION_MESSAGE);
-				} else {
-					JOptionPane.showMessageDialog(this, "Không tìm thấy sinh viên để xóa!", "Lỗi",
-							JOptionPane.ERROR_MESSAGE);
-				}
+	            // Xóa bản ghi trong bảng diemdanh 
+	            String sqlDiemDanh = "DELETE FROM diemdanh WHERE mssv = ?";
+	            pstmtDiemDanh = conn.prepareStatement(sqlDiemDanh);
+	            pstmtDiemDanh.setString(1, mssv);
+	            pstmtDiemDanh.executeUpdate();
 
-				conn.commit();
+	            // Xóa bản ghi trong bảng students
+	            String sqlStudents = "DELETE FROM students WHERE mssv = ?";
+	            pstmtStudents = conn.prepareStatement(sqlStudents);
+	            pstmtStudents.setString(1, mssv);
+	            int rowsAffected = pstmtStudents.executeUpdate();
 
-			} catch (SQLException e) {
-				JOptionPane.showMessageDialog(this, "Lỗi khi xóa sinh viên: " + e.getMessage(), "Lỗi",
-						JOptionPane.ERROR_MESSAGE);
-				e.printStackTrace();
-				try {
-					if (conn != null) {
-						conn.rollback();
-					}
-				} catch (SQLException rollbackEx) {
-					rollbackEx.printStackTrace();
-				}
-			} finally {
-				try {
-					if (pstmtBaitap != null)
-						pstmtBaitap.close();
-					if (pstmtCourses != null)
-						pstmtCourses.close();
-					if (pstmtStudents != null)
-						pstmtStudents.close();
-					if (conn != null) {
-						conn.setAutoCommit(true);
-						conn.close();
-					}
-				} catch (SQLException closeEx) {
-					closeEx.printStackTrace();
-				}
-			}
-		}
+	            if (rowsAffected > 0) {
+	                tableModel.removeRow(selectedRow);
+	                JOptionPane.showMessageDialog(this, "Xóa sinh viên thành công!", "Thông báo",
+	                        JOptionPane.INFORMATION_MESSAGE);
+	            } else {
+	                JOptionPane.showMessageDialog(this, "Không tìm thấy sinh viên để xóa!", "Lỗi",
+	                        JOptionPane.ERROR_MESSAGE);
+	            }
+
+	            conn.commit();
+
+	        } catch (SQLException e) {
+	            JOptionPane.showMessageDialog(this, "Lỗi khi xóa sinh viên: " + e.getMessage(), "Lỗi",
+	                    JOptionPane.ERROR_MESSAGE);
+	            e.printStackTrace();
+	            try {
+	                if (conn != null) {
+	                    conn.rollback();
+	                }
+	            } catch (SQLException rollbackEx) {
+	                rollbackEx.printStackTrace();
+	            }
+	        } finally {
+	            try {
+	                if (pstmtBaitap != null)
+	                    pstmtBaitap.close();
+	                if (pstmtCourses != null)
+	                    pstmtCourses.close();
+	                if (pstmtDiem != null)
+	                    pstmtDiem.close();
+	                if (pstmtDiemDanh != null) // Đóng PreparedStatement mới
+	                    pstmtDiemDanh.close();
+	                if (pstmtStudents != null)
+	                    pstmtStudents.close();
+	                if (conn != null) {
+	                    conn.setAutoCommit(true);
+	                    conn.close();
+	                }
+	            } catch (SQLException closeEx) {
+	                closeEx.printStackTrace();
+	            }
+	        }
+	    }
 	}
 
 	// Phương thức hiển thị thông tin chi tiết sinh viên
