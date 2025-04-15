@@ -108,7 +108,7 @@ public class ThongTinSinhVien extends JFrame {
 		MSSV_text1.setFont(new Font("Times New Roman", Font.PLAIN, 15));
 		ThongTinSinhVien.add(MSSV_text1);
 
-		Lop_comboBox_1 = new JComboBox<>(new String[] { "", "D21CQVTHI01-N", "D21CQVTVT-01", "D21CQVTMD01-N","D22CQVT01-N","D23CQVTMD01-N" });
+		Lop_comboBox_1 = new JComboBox<>(new String[] { "", "D21CQVTHI01-N", "D21CQVTVT01-N", "D21CQVTMD01-N","D22CQVT01-N","D23CQVTMD01-N" });
 		Lop_comboBox_1.setBounds(539, 197, 310, 30);
 		Lop_comboBox_1.setEnabled(false);
 		Lop_comboBox_1.setFont(new Font("Times New Roman", Font.PLAIN, 15));

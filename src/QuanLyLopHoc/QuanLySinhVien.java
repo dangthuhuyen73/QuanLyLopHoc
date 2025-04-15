@@ -310,7 +310,8 @@ public class QuanLySinhVien extends JPanel {
 	        PreparedStatement pstmtBaitap = null;
 	        PreparedStatement pstmtCourses = null;
 	        PreparedStatement pstmtDiem = null;
-	        PreparedStatement pstmtDiemDanh = null; // Thêm cho bảng diemdanh
+	        PreparedStatement pstmtDiemDanh = null;
+	        PreparedStatement pstmtChamDiem = null;
 	        PreparedStatement pstmtStudents = null;
 	        try {
 	            conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
@@ -334,13 +335,19 @@ public class QuanLySinhVien extends JPanel {
 	            pstmtDiem.setString(1, mssv);
 	            pstmtDiem.executeUpdate();
 
-	            // Xóa bản ghi trong bảng diemdanh 
+	            // Xóa bản ghi trong bảng diemdanh
 	            String sqlDiemDanh = "DELETE FROM diemdanh WHERE mssv = ?";
 	            pstmtDiemDanh = conn.prepareStatement(sqlDiemDanh);
 	            pstmtDiemDanh.setString(1, mssv);
 	            pstmtDiemDanh.executeUpdate();
 
-	            // Xóa bản ghi trong bảng students
+	            // Xóa bản ghi trong bảng chamdiem (đã sửa)
+	            String sqlChamDiem = "DELETE FROM chamdiem WHERE mssv = ?";
+	            pstmtChamDiem = conn.prepareStatement(sqlChamDiem);
+	            pstmtChamDiem.setString(1, mssv);
+	            pstmtChamDiem.executeUpdate();
+
+	            // Xóa bản ghi trong bảng students (sau tất cả các bảng phụ thuộc)
 	            String sqlStudents = "DELETE FROM students WHERE mssv = ?";
 	            pstmtStudents = conn.prepareStatement(sqlStudents);
 	            pstmtStudents.setString(1, mssv);
@@ -376,8 +383,10 @@ public class QuanLySinhVien extends JPanel {
 	                    pstmtCourses.close();
 	                if (pstmtDiem != null)
 	                    pstmtDiem.close();
-	                if (pstmtDiemDanh != null) // Đóng PreparedStatement mới
+	                if (pstmtDiemDanh != null)
 	                    pstmtDiemDanh.close();
+	                if (pstmtChamDiem != null)
+	                    pstmtChamDiem.close();
 	                if (pstmtStudents != null)
 	                    pstmtStudents.close();
 	                if (conn != null) {

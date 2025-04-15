@@ -10,8 +10,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -66,8 +64,7 @@ public class ChamDiem extends JFrame {
 	    lblMonHoc.setBounds(50, 70, 100, 30);
 	    contentPane.add(lblMonHoc);
 
-	    String[] columnNames = { "MSSV", "Họ Tên", "Lớp", "Thời gian nộp", "Tên Tệp", "Điểm chuyên cần", "Điểm 15",
-	            "Điểm giữa kỳ", "Điểm cuối kỳ" };
+	    String[] columnNames = { "MSSV", "Họ Tên", "Lớp", "Thời gian nộp", "Tên Tệp", "Điểm CC", "Điểm BT","Điểm giữa kỳ", "Điểm cuối kỳ" };
 	    tableModel = new DefaultTableModel(columnNames, 0) {
 	        @Override
 	        public boolean isCellEditable(int row, int column) {
@@ -106,16 +103,33 @@ public class ChamDiem extends JFrame {
 	    Mon_text.setBounds(147, 70, 269, 31);
 	    contentPane.add(Mon_text);
 
-	    JButton btnDiemDanh = new JButton("ĐIỂM DANH");
+	    JButton btnDiemDanh = new JButton("DANH SÁCH ĐIỂM DANH");
 	    btnDiemDanh.setForeground(Color.BLACK);
 	    btnDiemDanh.setFont(new Font("Times New Roman", Font.BOLD, 15));
 	    btnDiemDanh.setBackground(new Color(255, 204, 0));
-	    btnDiemDanh.setBounds(562, 70, 133, 30);
+	    btnDiemDanh.setBounds(637, 70, 236, 30);
 	    contentPane.add(btnDiemDanh);
 
 	    btnLuu.addActionListener(e -> saveScores());
 	    btnXuat.addActionListener(e -> exportToExcel());
-
+	    
+	    btnDiemDanh.addActionListener(e -> {
+            String monHoc = Mon_text.getText().trim();
+            if (monHoc.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Vui lòng chọn môn học!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            // Mở giao diện QuanLyLopHoc và hiển thị danh sách điểm danh
+            JFrame quanLyFrame = new JFrame("Quản Lý Lớp Học - Điểm Danh");
+            quanLyFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            quanLyFrame.setBounds(100, 100, 911, 690);
+            quanLyFrame.setLocationRelativeTo(null);
+            
+            QuanLyLopHoc quanLyLopHoc = new QuanLyLopHoc(monHoc, true); // true để hiển thị điểm danh
+            quanLyFrame.add(quanLyLopHoc);
+            quanLyFrame.setVisible(true);
+        });
+	    
 	    // Tải dữ liệu ngay khi mở cửa sổ nếu môn học không rỗng
 	    if (monGiangDay != null && !monGiangDay.trim().isEmpty()) {
 	        loadStudentData();

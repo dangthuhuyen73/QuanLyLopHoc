@@ -119,7 +119,7 @@ public class SinhVien extends JPanel {
 		GioiTinh_ComboBox.setBounds(343, 250, 65, 29);
 		panel.add(GioiTinh_ComboBox);
 
-		String[] items2 = { "", "D21CQVTHI01-N", "D21CQVTVT-01", "D21CQVTMD01-N","D22CQVT01-N","D23CQVTMD01-N" };
+		String[] items2 = { "", "D21CQVTHI01-N", "D21CQVTVT01-N", "D21CQVTMD01-N","D22CQVT01-N","D23CQVTMD01-N" };
 		Lop_ComboBox = new JComboBox<>(items2);
 		Lop_ComboBox.setFont(new Font("Times New Roman", Font.PLAIN, 15));
 		Lop_ComboBox.setBounds(98, 187, 310, 29);

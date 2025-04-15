@@ -53,15 +53,16 @@ public class QuanLyLopHoc extends JPanel {
 
     // Hằng số cho cột bảng
     private static final String[] CLASS_COLUMNS = { "Mã SV", "Tên", "Ngày Sinh", "Giới Tính", "Lớp", "Môn học", "Email" };
-    private static final String[] SCORE_COLUMNS = { "Mã SV", "Tên", "Môn học", "Điểm chuyên cần", "Điểm 15'", "Điểm giữa kỳ", "Điểm cuối kỳ" };
+    private static final String[] SCORE_COLUMNS = { "Mã SV", "Tên", "Môn học", "Điểm CC(10%)", "Điểm BT(20%)", "Điểm giữa kỳ(20%)", "Điểm cuối kỳ(50%)", "Điểm hệ 10" };
 
     public QuanLyLopHoc() {
+        this("", false);
+    }
+    
+    public QuanLyLopHoc(String monHoc, boolean showAttendance) {
         setBackground(new Color(0, 0, 121));
         setBounds(81, 11, 895, 652);
         setLayout(null);
-
-        // Tạo bảng BangDiem
-        createBangDiemTable();
 
         // Tiêu đề
         JLabel lblNewLabel = new JLabel("QUẢN LÝ LỚP HỌC");
@@ -168,20 +169,17 @@ public class QuanLyLopHoc extends JPanel {
         tableModel = new DefaultTableModel(CLASS_COLUMNS, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                // Chỉ cho phép chỉnh sửa các cột điểm (từ cột 3 trở đi) khi hiển thị bảng điểm
-                return tableModel.getColumnName(2).equals("Môn học") && column >= 3 && !tableModel.getColumnName(column).equals("Môn học");
+                // Chỉ cho phép chỉnh sửa các cột điểm (từ cột 3 đến 6) khi hiển thị bảng điểm
+                return tableModel.getColumnName(2).equals("Môn học") && column >= 3 && column <= 6;
             }
 
             @Override
             public Class<?> getColumnClass(int columnIndex) {
-                // Xử lý kiểu dữ liệu cho các cột
                 if (tableModel.getColumnCount() > 0) {
                     String columnName = tableModel.getColumnName(columnIndex);
-                    // Các cột ngày điểm danh (định dạng dd/MM/yyyy)
                     if (columnName.matches("\\d{2}/\\d{2}/\\d{4}")) {
                         return Boolean.class;
                     }
-                    // Các cột khác (Mã SV, Tên, Lớp, Môn học, điểm, v.v.)
                     return String.class;
                 }
                 return String.class;
@@ -256,28 +254,10 @@ public class QuanLyLopHoc extends JPanel {
         DiemDanh4.addActionListener(e -> loadAttendanceData("Điện Toán Đám Mây"));
         DiemDanh5.addActionListener(e -> loadAttendanceData("Phát Triển ứng Dụng"));
         DiemDanh6.addActionListener(e -> loadAttendanceData("Tiếng Anh"));
-    }
-
-    private void createBangDiemTable() {
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) {
-            String sql = """
-                    CREATE TABLE IF NOT EXISTS BangDiem (
-                        mssv TEXT,
-                        hoten TEXT,
-                        monhoc TEXT,
-                        diemchuyencan FLOAT,
-                        diem15phut FLOAT,
-                        diemgiuaky FLOAT,
-                        diemcuoiky FLOAT,
-                        PRIMARY KEY (mssv, monhoc)
-                    )
-                    """;
-            try (Statement stmt = conn.createStatement()) {
-                stmt.execute(sql);
-            }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Lỗi khi tạo bảng BangDiem: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
+     // Tự động hiển thị danh sách điểm danh nếu được yêu cầu
+        if (showAttendance && !monHoc.isEmpty()) {
+            loadAttendanceData(monHoc);
+            updateButtonColor(diemDanh_btn); // Đánh dấu nút điểm danh được chọn
         }
     }
 
@@ -288,10 +268,8 @@ public class QuanLyLopHoc extends JPanel {
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) {
             String placeholders = String.join(",", java.util.Collections.nCopies(lopList.length, "?"));
             String sql = """
-                    SELECT s.mssv, s.hoten, s.ngaysinh, s.gioitinh, s.lop,
-                           STRING_AGG(COALESCE(c.monhoc, ''), ', ') AS monhoc, s.email
+                    SELECT s.mssv, s.hoten, s.ngaysinh, s.gioitinh, s.lop, s.email
                     FROM students s
-                    LEFT JOIN courses c ON s.mssv = c.mssv
                     WHERE s.lop IN (%s)
                     GROUP BY s.mssv, s.hoten, s.ngaysinh, s.gioitinh, s.lop, s.email
                     """.formatted(placeholders);
@@ -310,7 +288,7 @@ public class QuanLyLopHoc extends JPanel {
                             rs.getDate("ngaysinh") != null ? sdf.format(rs.getDate("ngaysinh")) : "",
                             rs.getString("gioitinh"),
                             rs.getString("lop"),
-                            rs.getString("monhoc"),
+                            "",
                             rs.getString("email")
                         });
                         hasData = true;
@@ -336,11 +314,8 @@ public class QuanLyLopHoc extends JPanel {
 
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) {
             String sql = """
-                    SELECT s.mssv, s.hoten, c.monhoc,
-                           b.diemchuyencan, b.diem15phut, b.diemgiuaky, b.diemcuoiky
-                    FROM students s
-                    JOIN courses c ON s.mssv = c.mssv
-                    LEFT JOIN BangDiem b ON s.mssv = b.mssv AND b.monhoc = c.monhoc
+                    SELECT c.mssv, c.hoten, c.monhoc, c.diem_chuyencan, c.diem_15, c.diem_giuaky, c.diem_cuoiky
+                    FROM Chamdiem c
                     WHERE c.monhoc = ?
                     """;
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -348,19 +323,32 @@ public class QuanLyLopHoc extends JPanel {
                 try (ResultSet rs = pstmt.executeQuery()) {
                     boolean hasData = false;
                     while (rs.next()) {
+                        Float diemChuyenCan = rs.getObject("diem_chuyencan") != null ? rs.getFloat("diem_chuyencan") : null;
+                        Float diem15 = rs.getObject("diem_15") != null ? rs.getFloat("diem_15") : null;
+                        Float diemGiuaKy = rs.getObject("diem_giuaky") != null ? rs.getFloat("diem_giuaky") : null;
+                        Float diemCuoiKy = rs.getObject("diem_cuoiky") != null ? rs.getFloat("diem_cuoiky") : null;
+
+                        // Tính điểm hệ 10
+                        String diemHe10Str = "";
+                        if (diemChuyenCan != null && diem15 != null && diemGiuaKy != null && diemCuoiKy != null) {
+                            float diemHe10 = diemChuyenCan * 0.1f + diem15 * 0.2f + diemGiuaKy * 0.2f + diemCuoiKy * 0.5f;
+                            diemHe10Str = String.format("%.2f", diemHe10);
+                        }
+
                         tableModel.addRow(new Object[] {
                             rs.getString("mssv"),
                             rs.getString("hoten"),
                             rs.getString("monhoc"),
-                            rs.getObject("diemchuyencan") != null ? rs.getFloat("diemchuyencan") : "",
-                            rs.getObject("diem15phut") != null ? rs.getFloat("diem15phut") : "",
-                            rs.getObject("diemgiuaky") != null ? rs.getFloat("diemgiuaky") : "",
-                            rs.getObject("diemcuoiky") != null ? rs.getFloat("diemcuoiky") : ""
+                            diemChuyenCan != null ? diemChuyenCan : "",
+                            diem15 != null ? diem15 : "",
+                            diemGiuaKy != null ? diemGiuaKy : "",
+                            diemCuoiKy != null ? diemCuoiKy : "",
+                            diemHe10Str
                         });
                         hasData = true;
                     }
                     if (!hasData) {
-                        JOptionPane.showMessageDialog(this, "Không tìm thấy sinh viên cho môn " + monHoc, "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(this, "Không tìm thấy dữ liệu điểm cho môn " + monHoc, "Thông báo", JOptionPane.INFORMATION_MESSAGE);
                     }
                 }
             }
@@ -377,7 +365,6 @@ public class QuanLyLopHoc extends JPanel {
         tableModel.setRowCount(0);
 
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) {
-            // Lấy danh sách ngày điểm danh
             String dateSql = """
                     SELECT DISTINCT ngay
                     FROM diemdanh d
@@ -396,7 +383,6 @@ public class QuanLyLopHoc extends JPanel {
                 }
             }
 
-            // Thiết lập cột bảng
             List<String> columns = new ArrayList<>();
             columns.add("Mã SV");
             columns.add("Tên");
@@ -405,7 +391,6 @@ public class QuanLyLopHoc extends JPanel {
             columns.addAll(dates);
             tableModel.setColumnIdentifiers(columns.toArray());
 
-            // Lấy dữ liệu sinh viên và điểm danh
             String sql = """
                     SELECT s.mssv, s.hoten, s.lop
                     FROM students s
@@ -422,14 +407,12 @@ public class QuanLyLopHoc extends JPanel {
                         String hoten = rs.getString("hoten");
                         String lop = rs.getString("lop");
 
-                        // Tạo hàng dữ liệu
                         Object[] row = new Object[columns.size()];
                         row[0] = mssv;
                         row[1] = hoten;
                         row[2] = lop;
                         row[3] = monHoc;
 
-                        // Lấy trạng thái điểm danh cho từng ngày
                         String attendanceSql = """
                                 SELECT ngay, trangthai
                                 FROM diemdanh d
@@ -447,7 +430,6 @@ public class QuanLyLopHoc extends JPanel {
                                     attendanceMap.put(ngay, trangthai);
                                 }
 
-                                // Điền trạng thái vào hàng
                                 for (int i = 4; i < columns.size(); i++) {
                                     row[i] = attendanceMap.getOrDefault(columns.get(i), false);
                                 }
@@ -478,16 +460,17 @@ public class QuanLyLopHoc extends JPanel {
 
         String monHoc = HienThi.getText().replace("Danh Sách Lớp Môn: ", "");
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) {
+            conn.setAutoCommit(false);
             String sql = """
-                    INSERT INTO BangDiem (mssv, hoten, monhoc, diemchuyencan, diem15phut, diemgiuaky, diemcuoiky)
-                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    INSERT INTO Chamdiem (mssv, hoten, monhoc, diem_chuyencan, diem_15, diem_giuaky, diem_cuoiky, lop, thoigian_nop, ten_tep)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, NULL, NULL, NULL)
                     ON CONFLICT (mssv, monhoc)
                     DO UPDATE SET
                         hoten = EXCLUDED.hoten,
-                        diemchuyencan = EXCLUDED.diemchuyencan,
-                        diem15phut = EXCLUDED.diem15phut,
-                        diemgiuaky = EXCLUDED.diemgiuaky,
-                        diemcuoiky = EXCLUDED.diemcuoiky
+                        diem_chuyencan = EXCLUDED.diem_chuyencan,
+                        diem_15 = EXCLUDED.diem_15,
+                        diem_giuaky = EXCLUDED.diem_giuaky,
+                        diem_cuoiky = EXCLUDED.diem_cuoiky
                     """;
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 for (int i = 0; i < tableModel.getRowCount(); i++) {
@@ -513,7 +496,13 @@ public class QuanLyLopHoc extends JPanel {
                     pstmt.addBatch();
                 }
                 pstmt.executeBatch();
+                conn.commit();
                 JOptionPane.showMessageDialog(this, "Lưu điểm thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                // Tải lại dữ liệu để cập nhật cột Điểm hệ 10
+                loadScoreData(monHoc);
+            } catch (SQLException e) {
+                conn.rollback();
+                throw e;
             }
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Lỗi khi lưu điểm: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
