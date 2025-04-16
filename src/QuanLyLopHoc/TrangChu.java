@@ -390,10 +390,10 @@ public class TrangChu extends JFrame {
         panel_2_2.setBounds(144, 37, 4, 119);
         panel_BT.add(panel_2_2);
 
-        JLabel lbl_GV_1 = new JLabel("BÀI TẬP");
+        JLabel lbl_GV_1 = new JLabel("BÀI TẬP CÒN");
         lbl_GV_1.setForeground(Color.WHITE);
         lbl_GV_1.setFont(new Font("Times New Roman", Font.BOLD, 15));
-        lbl_GV_1.setBounds(158, 111, 100, 26);
+        lbl_GV_1.setBounds(158, 111, 114, 26);
         panel_BT.add(lbl_GV_1);
 
         ImageIcon btIcon = new ImageIcon(getClass().getResource("/Icon/book.png"));
@@ -472,7 +472,7 @@ public class TrangChu extends JFrame {
 
         // Bảng lịch
         String[] columns = {"CN", "T2", "T3", "T4", "T5", "T6", "T7"};
-        tableModel = new DefaultTableModel(null, columns) {
+       tableModel = new DefaultTableModel(null, columns) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;

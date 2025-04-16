@@ -15,11 +15,26 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 
-import javax.swing.*;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class QuanLySinhVien extends JPanel {
@@ -54,21 +69,14 @@ public class QuanLySinhVien extends JPanel {
 		btnAdd.setFont(new Font("Times New Roman", Font.BOLD, 14));
 		btnAdd.setBackground(new Color(255, 204, 0));
 		btnAdd.setForeground(Color.BLACK);
-		btnAdd.setBounds(612, 167, 100, 30);
+		btnAdd.setBounds(593, 144, 100, 30);
 		add(btnAdd);
-
-		JButton btnDelete = new JButton("XÓA");
-		btnDelete.setFont(new Font("Times New Roman", Font.BOLD, 14));
-		btnDelete.setBackground(new Color(255, 204, 0));
-		btnDelete.setForeground(Color.BLACK);
-		btnDelete.setBounds(762, 167, 100, 30);
-		add(btnDelete);
 
 		JButton btnExport = new JButton("XUẤT EXCEL");
 		btnExport.setFont(new Font("Times New Roman", Font.BOLD, 14));
 		btnExport.setBackground(new Color(0, 255, 0));
 		btnExport.setForeground(new Color(0, 0, 0));
-		btnExport.setBounds(704, 596, 158, 30);
+		btnExport.setBounds(713, 144, 158, 30);
 		add(btnExport);
 
 		JLabel lblNewLabel_1 = new JLabel("Mã Sinh Viên:");
@@ -81,13 +89,18 @@ public class QuanLySinhVien extends JPanel {
 		MaSV_text.setColumns(10);
 		MaSV_text.setBounds(271, 74, 321, 40);
 		add(MaSV_text);
+		
+		ImageIcon icon = null;
+		icon = new ImageIcon(getClass().getResource("/Icon/find.png"));
+		Image scaledImage = icon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
+		icon = new ImageIcon(scaledImage);
 
-		JButton btnTimKiem = new JButton("Tìm Kiếm");
-		btnTimKiem.setVerticalTextPosition(SwingConstants.CENTER);
-		btnTimKiem.setHorizontalTextPosition(SwingConstants.RIGHT);
-		btnTimKiem.setForeground(Color.BLACK);
+		JButton btnTimKiem = new JButton("Tìm Kiếm", icon);
 		btnTimKiem.setFont(new Font("Times New Roman", Font.BOLD, 14));
+		btnTimKiem.setForeground(Color.BLACK);
 		btnTimKiem.setBounds(612, 74, 117, 40);
+		btnTimKiem.setHorizontalTextPosition(SwingConstants.RIGHT);
+		btnTimKiem.setVerticalTextPosition(SwingConstants.CENTER);
 		add(btnTimKiem);
 
 		JButton btn_TTSV = new JButton("THÔNG TIN CHI TIẾT");
@@ -95,11 +108,11 @@ public class QuanLySinhVien extends JPanel {
 		btn_TTSV.setFont(new Font("Times New Roman", Font.BOLD, 14));
 		btn_TTSV.setBorder(new LineBorder(Color.WHITE, 1));
 		btn_TTSV.setBackground(new Color(50, 150, 255));
-		btn_TTSV.setBounds(36, 167, 210, 30);
+		btn_TTSV.setBounds(23, 144, 210, 30);
 		add(btn_TTSV);
 
 		// Bảng danh sách sinh viên
-		String[] columnNames = { "Mã SV", "Tên", "Ngày Sinh", "Giới Tính", "Lớp", "Chuyên Ngành", "Email" };
+		String[] columnNames = { "Mã SV", "Tên", "Ngày Sinh", "Giới Tính", "Lớp", "Môn học", "Email" };
 		tableModel = new DefaultTableModel(columnNames, 0);
 		table = new JTable(tableModel);
 		table.setFont(new Font("Times New Roman", Font.PLAIN, 14));
@@ -110,7 +123,7 @@ public class QuanLySinhVien extends JPanel {
 
 		// Đặt bảng trong JScrollPane để có thanh cuộn
 		JScrollPane scrollPane = new JScrollPane(table);
-		scrollPane.setBounds(25, 219, 848, 366);
+		scrollPane.setBounds(23, 196, 848, 433);
 		add(scrollPane);
 
 		// Sự kiện cho nút Xuất Excel
@@ -126,14 +139,6 @@ public class QuanLySinhVien extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				searchStudentByMSSV();
-			}
-		});
-
-		// Sự kiện cho nút Xóa
-		btnDelete.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				deleteStudent();
 			}
 		});
 
@@ -168,29 +173,6 @@ public class QuanLySinhVien extends JPanel {
 		currentPanel.add(addStudentPanel);
 		currentPanel.revalidate();
 		currentPanel.repaint();
-
-		// Thêm nút Quay lại để trở về giao diện QuanLySinhVien
-		JButton btnBack = new JButton("QUAY LẠI");
-		btnBack.setFont(new Font("Times New Roman", Font.BOLD, 14));
-		btnBack.setBackground(new Color(255, 204, 0));
-		btnBack.setForeground(Color.BLACK);
-		btnBack.setBounds(10, 10, 100, 30);
-		addStudentPanel.add(btnBack);
-
-		btnBack.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// Trở lại giao diện QuanLySinhVien
-				currentPanel.removeAll();
-				currentPanel.add(MaSV_text);
-				currentPanel.add(table.getTableHeader());
-				currentPanel.add(table);
-				currentPanel.add(new JScrollPane(table));
-				currentPanel.revalidate();
-				currentPanel.repaint();
-				loadStudentData(); // Tải lại dữ liệu
-			}
-		});
 	}
 
 	// Phương thức tải dữ liệu sinh viên từ database
@@ -201,7 +183,8 @@ public class QuanLySinhVien extends JPanel {
 		try {
 			conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
 			stmt = conn.createStatement();
-			String sql = "SELECT mssv, hoten, ngaysinh, gioitinh, lop, email FROM students";
+			String sql = "SELECT s.mssv, s.hoten, s.ngaysinh, s.gioitinh, s.lop, s.email, c.monhoc "
+					+ "FROM students s " + "LEFT JOIN courses c ON s.mssv = c.mssv";
 			rs = stmt.executeQuery(sql);
 
 			tableModel.setRowCount(0);
@@ -215,9 +198,9 @@ public class QuanLySinhVien extends JPanel {
 				String gioitinh = rs.getString("gioitinh");
 				String lop = rs.getString("lop");
 				String email = rs.getString("email");
-				String chuyennganh = "";
+				String monhoc = rs.getString("monhoc") != null ? rs.getString("monhoc") : "";
 
-				tableModel.addRow(new Object[] { mssv, hoten, ngaysinh, gioitinh, lop, chuyennganh, email });
+				tableModel.addRow(new Object[] { mssv, hoten, ngaysinh, gioitinh, lop, monhoc, email });
 			}
 		} catch (SQLException e) {
 			JOptionPane.showMessageDialog(this, "Lỗi khi tải dữ liệu: " + e.getMessage(), "Lỗi",
@@ -237,7 +220,7 @@ public class QuanLySinhVien extends JPanel {
 		}
 	}
 
-	// Phương thức tìm kiếm sinh viên theo MSSV
+	// Method to search student by MSSV
 	private void searchStudentByMSSV() {
 		String mssv = MaSV_text.getText().trim();
 		if (mssv.isEmpty()) {
@@ -252,7 +235,8 @@ public class QuanLySinhVien extends JPanel {
 		ResultSet rs = null;
 		try {
 			conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
-			String sql = "SELECT mssv, hoten, ngaysinh, gioitinh, lop, email FROM students WHERE mssv = ?";
+			String sql = "SELECT s.mssv, s.hoten, s.ngaysinh, s.gioitinh, s.lop, s.email, c.monhoc "
+					+ "FROM students s LEFT JOIN courses c ON s.mssv = c.mssv WHERE s.mssv = ?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, mssv);
 			rs = pstmt.executeQuery();
@@ -260,17 +244,21 @@ public class QuanLySinhVien extends JPanel {
 			tableModel.setRowCount(0);
 
 			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+			boolean found = false;
 
-			if (rs.next()) {
+			while (rs.next()) {
+				found = true;
 				String hoten = rs.getString("hoten");
 				String ngaysinh = rs.getDate("ngaysinh") != null ? sdf.format(rs.getDate("ngaysinh")) : "";
 				String gioitinh = rs.getString("gioitinh");
 				String lop = rs.getString("lop");
 				String email = rs.getString("email");
-				String chuyennganh = "";
+				String monhoc = rs.getString("monhoc") != null ? rs.getString("monhoc") : "";
 
-				tableModel.addRow(new Object[] { mssv, hoten, ngaysinh, gioitinh, lop, chuyennganh, email });
-			} else {
+				tableModel.addRow(new Object[] { mssv, hoten, ngaysinh, gioitinh, lop, monhoc, email });
+			}
+
+			if (!found) {
 				JOptionPane.showMessageDialog(this, "Không tìm thấy sinh viên với MSSV: " + mssv, "Thông báo",
 						JOptionPane.INFORMATION_MESSAGE);
 			}
@@ -290,114 +278,6 @@ public class QuanLySinhVien extends JPanel {
 				closeEx.printStackTrace();
 			}
 		}
-	}
-
-	// Phương thức xóa sinh viên
-	private void deleteStudent() {
-	    int selectedRow = table.getSelectedRow();
-	    if (selectedRow == -1) {
-	        JOptionPane.showMessageDialog(this, "Vui lòng chọn một sinh viên để xóa!", "Cảnh báo",
-	                JOptionPane.WARNING_MESSAGE);
-	        return;
-	    }
-
-	    String mssv = tableModel.getValueAt(selectedRow, 0).toString();
-	    int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc muốn xóa sinh viên với MSSV: " + mssv + "?",
-	            "Xác nhận xóa", JOptionPane.YES_NO_OPTION);
-
-	    if (confirm == JOptionPane.YES_OPTION) {
-	        Connection conn = null;
-	        PreparedStatement pstmtBaitap = null;
-	        PreparedStatement pstmtCourses = null;
-	        PreparedStatement pstmtDiem = null;
-	        PreparedStatement pstmtDiemDanh = null;
-	        PreparedStatement pstmtChamDiem = null;
-	        PreparedStatement pstmtStudents = null;
-	        try {
-	            conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
-	            conn.setAutoCommit(false);
-
-	            // Xóa bản ghi trong bảng baitap
-	            String sqlBaitap = "DELETE FROM baitap WHERE mssv = ?";
-	            pstmtBaitap = conn.prepareStatement(sqlBaitap);
-	            pstmtBaitap.setString(1, mssv);
-	            pstmtBaitap.executeUpdate();
-
-	            // Xóa bản ghi trong bảng courses
-	            String sqlCourses = "DELETE FROM courses WHERE mssv = ?";
-	            pstmtCourses = conn.prepareStatement(sqlCourses);
-	            pstmtCourses.setString(1, mssv);
-	            pstmtCourses.executeUpdate();
-
-	            // Xóa bản ghi trong bảng diem
-	            String sqlDiem = "DELETE FROM diem WHERE mssv = ?";
-	            pstmtDiem = conn.prepareStatement(sqlDiem);
-	            pstmtDiem.setString(1, mssv);
-	            pstmtDiem.executeUpdate();
-
-	            // Xóa bản ghi trong bảng diemdanh
-	            String sqlDiemDanh = "DELETE FROM diemdanh WHERE mssv = ?";
-	            pstmtDiemDanh = conn.prepareStatement(sqlDiemDanh);
-	            pstmtDiemDanh.setString(1, mssv);
-	            pstmtDiemDanh.executeUpdate();
-
-	            // Xóa bản ghi trong bảng chamdiem (đã sửa)
-	            String sqlChamDiem = "DELETE FROM chamdiem WHERE mssv = ?";
-	            pstmtChamDiem = conn.prepareStatement(sqlChamDiem);
-	            pstmtChamDiem.setString(1, mssv);
-	            pstmtChamDiem.executeUpdate();
-
-	            // Xóa bản ghi trong bảng students (sau tất cả các bảng phụ thuộc)
-	            String sqlStudents = "DELETE FROM students WHERE mssv = ?";
-	            pstmtStudents = conn.prepareStatement(sqlStudents);
-	            pstmtStudents.setString(1, mssv);
-	            int rowsAffected = pstmtStudents.executeUpdate();
-
-	            if (rowsAffected > 0) {
-	                tableModel.removeRow(selectedRow);
-	                JOptionPane.showMessageDialog(this, "Xóa sinh viên thành công!", "Thông báo",
-	                        JOptionPane.INFORMATION_MESSAGE);
-	            } else {
-	                JOptionPane.showMessageDialog(this, "Không tìm thấy sinh viên để xóa!", "Lỗi",
-	                        JOptionPane.ERROR_MESSAGE);
-	            }
-
-	            conn.commit();
-
-	        } catch (SQLException e) {
-	            JOptionPane.showMessageDialog(this, "Lỗi khi xóa sinh viên: " + e.getMessage(), "Lỗi",
-	                    JOptionPane.ERROR_MESSAGE);
-	            e.printStackTrace();
-	            try {
-	                if (conn != null) {
-	                    conn.rollback();
-	                }
-	            } catch (SQLException rollbackEx) {
-	                rollbackEx.printStackTrace();
-	            }
-	        } finally {
-	            try {
-	                if (pstmtBaitap != null)
-	                    pstmtBaitap.close();
-	                if (pstmtCourses != null)
-	                    pstmtCourses.close();
-	                if (pstmtDiem != null)
-	                    pstmtDiem.close();
-	                if (pstmtDiemDanh != null)
-	                    pstmtDiemDanh.close();
-	                if (pstmtChamDiem != null)
-	                    pstmtChamDiem.close();
-	                if (pstmtStudents != null)
-	                    pstmtStudents.close();
-	                if (conn != null) {
-	                    conn.setAutoCommit(true);
-	                    conn.close();
-	                }
-	            } catch (SQLException closeEx) {
-	                closeEx.printStackTrace();
-	            }
-	        }
-	    }
 	}
 
 	// Phương thức hiển thị thông tin chi tiết sinh viên
@@ -466,7 +346,7 @@ public class QuanLySinhVien extends JPanel {
 		Sheet sheet = workbook.createSheet("DanhSachSinhVien");
 
 		Row headerRow = sheet.createRow(0);
-		String[] columns = { "Mã SV", "Tên", "Ngày Sinh", "Giới Tính", "Lớp", "Chuyên Ngành", "Email" };
+		String[] columns = { "Mã SV", "Tên", "Ngày Sinh", "Giới Tính", "Lớp", "Môn học", "Email" };
 		for (int i = 0; i < columns.length; i++) {
 			Cell cell = headerRow.createCell(i);
 			cell.setCellValue(columns[i]);
@@ -517,23 +397,25 @@ public class QuanLySinhVien extends JPanel {
 			ex.printStackTrace();
 		}
 	}
+
 	public int getStudentCount() {
-	    int count = 0;
-	    try {
-	        Connection conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
-	        String sql = "SELECT COUNT(*) FROM students";
-	        Statement stmt = conn.createStatement();
-	        ResultSet rs = stmt.executeQuery(sql);
-	        if (rs.next()) {
-	            count = rs.getInt(1);
-	        }
-	        rs.close();
-	        stmt.close();
-	        conn.close();
-	    } catch (SQLException e) {
-	        JOptionPane.showMessageDialog(this, "Lỗi khi đếm sinh viên: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
-	        e.printStackTrace();
-	    }
-	    return count;
+		int count = 0;
+		try {
+			Connection conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+			String sql = "SELECT COUNT(*) FROM students";
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql);
+			if (rs.next()) {
+				count = rs.getInt(1);
+			}
+			rs.close();
+			stmt.close();
+			conn.close();
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(this, "Lỗi khi đếm sinh viên: " + e.getMessage(), "Lỗi",
+					JOptionPane.ERROR_MESSAGE);
+			e.printStackTrace();
+		}
+		return count;
 	}
 }
