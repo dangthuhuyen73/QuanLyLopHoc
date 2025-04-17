@@ -132,8 +132,10 @@ public class BaiTap extends JFrame {
         monHocLabel.setBounds(30, 130, 94, 30);
         contentPane.add(monHocLabel);
 
-        monComboBox = new JComboBox<>(new String[]{"", "Lập Trình Hướng Đối Tượng", "Hệ Thống nhúng IOT",
-                "Hệ Thống Cảm Biến", "Điện Toán Đám Mây", "Phát Triển ứng Dụng", "Tiếng Anh"});
+     // SỬA: Khởi tạo monComboBox với danh sách môn học từ cơ sở dữ liệu
+        monComboBox = new JComboBox<>();
+        monComboBox.addItem(""); // Thêm mục rỗng mặc định
+        loadMonHocFromDatabase(mssv); // Gọi phương thức để tải danh sách môn học
         monComboBox.setFont(new Font("Times New Roman", Font.PLAIN, 15));
         monComboBox.setBounds(120, 130, 300, 30);
         contentPane.add(monComboBox);
@@ -235,6 +237,38 @@ public class BaiTap extends JFrame {
         chonTepButton.addActionListener(e -> chooseFile());
         nopBaiButton.addActionListener(e -> submitAssignment());
         huyButton.addActionListener(e -> cancelSubmission());
+    }
+ // phương thức để tải danh sách môn học từ cơ sở dữ liệu
+    private void loadMonHocFromDatabase(String mssv) {
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) {
+            // Truy vấn danh sách môn học từ bảng courses dựa trên mssv
+            PreparedStatement pstmt = conn.prepareStatement("SELECT DISTINCT monhoc FROM courses WHERE mssv = ?");
+            pstmt.setString(1, mssv);
+            ResultSet rs = pstmt.executeQuery();
+
+            // Xóa các mục cũ trong monComboBox (trừ mục rỗng mặc định)
+            monComboBox.removeAllItems();
+            monComboBox.addItem("");
+
+            // Thêm các môn học từ cơ sở dữ liệu vào monComboBox
+            while (rs.next()) {
+                String monHoc = rs.getString("monhoc");
+                if (monHoc != null && !monHoc.isEmpty()) {
+                    monComboBox.addItem(monHoc);
+                }
+            }
+
+            rs.close();
+            pstmt.close();
+
+            // Thông báo nếu không tìm thấy môn học
+            if (monComboBox.getItemCount() <= 1) { // Chỉ có mục rỗng
+                showWarningMessage("Không tìm thấy môn học nào cho MSSV: " + mssv);
+            }
+        } catch (SQLException ex) {
+            showErrorMessage("Lỗi khi tải danh sách môn học: " + ex.getMessage());
+            ex.printStackTrace();
+        }
     }
 
     // Cập nhật danh sách tiêu đề bài tập và tên giảng viên dựa trên môn học
