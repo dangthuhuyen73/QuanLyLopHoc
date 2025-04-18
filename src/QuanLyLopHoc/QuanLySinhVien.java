@@ -15,26 +15,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class QuanLySinhVien extends JPanel {
@@ -220,7 +205,7 @@ public class QuanLySinhVien extends JPanel {
 		}
 	}
 
-	// Method to search student by MSSV
+	// tim kiem sinh viên bằng MSSV
 	private void searchStudentByMSSV() {
 		String mssv = MaSV_text.getText().trim();
 		if (mssv.isEmpty()) {
@@ -341,6 +326,7 @@ public class QuanLySinhVien extends JPanel {
 		detailFrame.setVisible(true);
 	}
 
+	//xuất excel
 	private void exportToExcel() {
 		Workbook workbook = new XSSFWorkbook();
 		Sheet sheet = workbook.createSheet("DanhSachSinhVien");
@@ -398,11 +384,12 @@ public class QuanLySinhVien extends JPanel {
 		}
 	}
 
+	//đếm số lượng sinh viên 
 	public int getStudentCount() {
 		int count = 0;
 		try {
 			Connection conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
-			String sql = "SELECT COUNT(*) FROM students";
+			String sql = "SELECT COUNT(*) FROM students"; //từu bảng Student ở SQL để đếm dòng
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(sql);
 			if (rs.next()) {

@@ -291,6 +291,7 @@ public class GiangVien extends JPanel {
 		});
 	}
 
+	// Tạo bảng giang_vien trong cơ sở dữ liệu nếu chưa tồn tại
 	private void createTableIfNotExists() {
 		Connection conn = null;
 		Statement stmt = null;

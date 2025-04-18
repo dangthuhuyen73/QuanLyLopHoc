@@ -158,6 +158,7 @@ public class ChamDiem extends JFrame {
         }
     }
 
+    //tạo các bảng
     private void createTableIfNotExists() {
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
              Statement stmt = conn.createStatement()) {
@@ -202,7 +203,10 @@ public class ChamDiem extends JFrame {
         }
     }
 
+ // Tải dữ liệu sinh viên và điểm số theo môn học
     private void loadStudentData() {
+    	// Lấy danh sách sinh viên học một môn học cụ thể và điểm số từ bảng Chamdiem
+        // Hiển thị dữ liệu lên bảng giao diện
         tableModel.setRowCount(0);
         String monHoc = Mon_text.getText().trim();
 
@@ -252,6 +256,7 @@ public class ChamDiem extends JFrame {
         }
     }
 
+ // Lưu điểm số sinh viên vào bảng Chamdiem
     private void saveScores() {
         String monHoc = Mon_text.getText();
         if (monHoc.isEmpty()) {
@@ -378,6 +383,7 @@ public class ChamDiem extends JFrame {
         }
     }
 
+ // Xuất dữ liệu từ bảng giao diện ra file Excel
     private void exportToExcel() {
         if (tableModel.getRowCount() == 0) {
             JOptionPane.showMessageDialog(this, "Không có dữ liệu để xuất!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
@@ -439,7 +445,7 @@ public class ChamDiem extends JFrame {
             ex.printStackTrace();
         }
     }
-
+ // Khởi chạy ứng dụng
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
             try {

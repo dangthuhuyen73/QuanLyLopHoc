@@ -14,15 +14,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
@@ -132,7 +124,7 @@ public class BaiTap extends JFrame {
         monHocLabel.setBounds(30, 130, 94, 30);
         contentPane.add(monHocLabel);
 
-     // SỬA: Khởi tạo monComboBox với danh sách môn học từ cơ sở dữ liệu
+     //  Khởi tạo monComboBox với danh sách môn học từ cơ sở dữ liệu
         monComboBox = new JComboBox<>();
         monComboBox.addItem(""); // Thêm mục rỗng mặc định
         loadMonHocFromDatabase(mssv); // Gọi phương thức để tải danh sách môn học
@@ -238,6 +230,7 @@ public class BaiTap extends JFrame {
         nopBaiButton.addActionListener(e -> submitAssignment());
         huyButton.addActionListener(e -> cancelSubmission());
     }
+    
  // phương thức để tải danh sách môn học từ cơ sở dữ liệu
     private void loadMonHocFromDatabase(String mssv) {
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) {
@@ -257,7 +250,6 @@ public class BaiTap extends JFrame {
                     monComboBox.addItem(monHoc);
                 }
             }
-
             rs.close();
             pstmt.close();
 

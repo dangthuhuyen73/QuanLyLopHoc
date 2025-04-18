@@ -53,6 +53,7 @@ public class ThongTinGiangVien extends JFrame {
         originalMaGV = maGV; // Lưu mã GV ban đầu
     }
 
+  //Khởi tạo giao diện người dùng
     private void initialize() {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setBounds(100, 100, 895, 652);
@@ -137,19 +138,10 @@ public class ThongTinGiangVien extends JFrame {
         avata.setBorder(new LineBorder(Color.WHITE, 3));
         avata.setBackground(Color.WHITE);
         avata.setOpaque(true);
-        ThongTinGiangVienPanel.add(avata);
-
-        // Tải hình ảnh và xử lý lỗi nếu không tìm thấy
         ImageIcon avatarIcon = new ImageIcon(getClass().getResource("/Icon/GV.png"));
-        if (avatarIcon.getImage() != null) {
-            Image scaledImage = avatarIcon.getImage().getScaledInstance(224, 227, Image.SCALE_SMOOTH);
-            avata.setIcon(new ImageIcon(scaledImage));
-        } else {
-            JOptionPane.showMessageDialog(this,
-                "Không thể tải hình ảnh avatar! Vui lòng kiểm tra đường dẫn /Icon/GV.png",
-                "Lỗi",
-                JOptionPane.ERROR_MESSAGE);
-        }
+        Image scaledImage = avatarIcon.getImage().getScaledInstance(224, 227, Image.SCALE_SMOOTH);
+        avata.setIcon(new ImageIcon(scaledImage));
+        ThongTinGiangVienPanel.add(avata);
 
         JPanel panel = new JPanel();
         panel.setBackground(new Color(255, 204, 0));

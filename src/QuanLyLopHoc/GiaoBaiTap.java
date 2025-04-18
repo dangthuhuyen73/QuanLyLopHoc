@@ -14,14 +14,7 @@ import java.time.LocalTime;
 import java.util.Calendar;
 import java.util.Date;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
@@ -36,7 +29,7 @@ public class GiaoBaiTap extends JFrame {
     private JTextField TenGV_text;
     private JTextField TieuDe_Text;
     private JTextArea ND_textArea;
-    private JTextField Mon_text; // Thay JComboBox bằng JTextField
+    private JTextField Mon_text; 
     private JDateChooser NgayNop;
     private TimePicker timePicker;
 
@@ -59,7 +52,7 @@ public class GiaoBaiTap extends JFrame {
         Mon_text.setText(monHoc); // Hiển thị môn học
     }
 
-    // Create table if not exists
+    //tạo bảng giaobaitap trong cơ sở dữ liệu nếu bảng này chưa tồn tại
     private void createTable() {
         String createTableSQL = """
                 CREATE TABLE IF NOT EXISTS giaobaitap (
@@ -83,6 +76,7 @@ public class GiaoBaiTap extends JFrame {
         }
     }
 
+    //Khởi tạo giao diện người dùng
     private void initialize() {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setBounds(100, 100, 895, 652);
@@ -137,7 +131,7 @@ public class GiaoBaiTap extends JFrame {
         lblMonHoc.setBounds(469, 93, 114, 30);
         contentPane.add(lblMonHoc);
 
-        Mon_text = new JTextField(); // Thay JComboBox bằng JTextField
+        Mon_text = new JTextField(); 
         Mon_text.setFont(new Font("Times New Roman", Font.PLAIN, 15));
         Mon_text.setBounds(559, 93, 300, 30);
         Mon_text.setEditable(false); // Không cho phép chỉnh sửa môn học
@@ -152,7 +146,7 @@ public class GiaoBaiTap extends JFrame {
 
         ND_textArea = new JTextArea();
         ND_textArea.setFont(new Font("Times New Roman", Font.BOLD, 15));
-        JScrollPane scrollPane = new JScrollPane(ND_textArea); // Thêm JScrollPane để hỗ trợ cuộn
+        JScrollPane scrollPane = new JScrollPane(ND_textArea);
         scrollPane.setBounds(25, 229, 832, 244);
         contentPane.add(scrollPane);
 
@@ -162,14 +156,12 @@ public class GiaoBaiTap extends JFrame {
         lblHanNop.setBounds(75, 501, 88, 28);
         contentPane.add(lblHanNop);
 
-        // Sử dụng JDateChooser để chọn ngày
         NgayNop = new JDateChooser();
         NgayNop.setBounds(163, 501, 150, 30);
         NgayNop.setFont(new Font("Times New Roman", Font.PLAIN, 15));
         NgayNop.setDateFormatString("dd/MM/yyyy");
         contentPane.add(NgayNop);
 
-        // Hạn nộp - Giờ
         JLabel lblHanNopGio = new JLabel("Giờ nộp:");
         lblHanNopGio.setFont(new Font("Times New Roman", Font.BOLD, 15));
         lblHanNopGio.setForeground(new Color(255, 255, 255));

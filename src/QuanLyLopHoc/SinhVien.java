@@ -1,8 +1,6 @@
 package QuanLyLopHoc;
 
-import java.awt.Color;
-import java.awt.EventQueue;
-import java.awt.Font;
+import java.awt.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -16,14 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 import com.toedter.calendar.JDateChooser;
 
@@ -223,10 +214,10 @@ public class SinhVien extends JPanel {
         add(Luu_button);
 
         Luu_button.addActionListener(e -> {
-            if (!validateInput()) {
+            if (!validateInput()) {  //Kiểm tra tính hợp lệ
                 return;
             }
-            saveToDatabase();
+            saveToDatabase(); //lưu thông tin sinh viên vào Database
         });
 
         JButton xuat_button = new JButton("XUẤT");
@@ -242,7 +233,7 @@ public class SinhVien extends JPanel {
                         "Chưa có dữ liệu nào được lưu. Vui lòng nhấn LƯU trước!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             } else {
                 EventQueue.invokeLater(() -> {
-                    ThongTinSinhVien frame = new ThongTinSinhVien(
+                    ThongTinSinhVien frame = new ThongTinSinhVien(  //mở ra cửa sổ ThongTinSinhVien
                             tempStudentInfo.getHoTen(),
                             tempStudentInfo.getMssv(),
                             tempStudentInfo.getLop(),
@@ -259,6 +250,7 @@ public class SinhVien extends JPanel {
         });
     }
 
+    //Kiểm tra tính hợp lệ của dữ liệu nhập vào trước khi lưu vào cơ sở dữ liệu
     private boolean validateInput() {
         // Kiểm tra trường rỗng
         if (HoTen_text.getText().trim().isEmpty() ||
@@ -309,6 +301,7 @@ public class SinhVien extends JPanel {
         return true;
     }
 
+    //Kiểm tra xem các môn học được chọn có trùng thời gian hay không
     private boolean checkScheduleConflict() {
         Set<String> selectedTimes = new HashSet<>();
         for (int i = 0; i < subjectCheckBoxes.size(); i++) {
@@ -322,6 +315,7 @@ public class SinhVien extends JPanel {
         return true;
     }
 
+    //Cập nhật thông tin môn học khi người dùng chọn môn
     private void updateCourseInfo() {
         List<String> selectedMaMon = new ArrayList<>();
         List<String> selectedSoTin = new ArrayList<>();
@@ -340,6 +334,7 @@ public class SinhVien extends JPanel {
         ThoiGian_text.setText(String.join(", ", selectedThoiGian));
     }
 
+    //Kiểm tra xem có ít nhất một môn học được chọn
     private boolean isAnySubjectSelected() {
         for (JCheckBox checkBox : subjectCheckBoxes) {
             if (checkBox.isSelected()) {
@@ -349,14 +344,16 @@ public class SinhVien extends JPanel {
         return false;
     }
 
+    //Tạo hai bảng students và courses trong cơ sở dữ liệu
     private void createTables() {
-        Connection conn = null;
+        Connection conn = null; 
         Statement stmt = null;
 
         try {
             conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
             stmt = conn.createStatement();
 
+            //Tạo bảng students để lưu thông tin sinh viên
             String sqlStudents = "CREATE TABLE IF NOT EXISTS students (" +
                     "mssv VARCHAR(50) PRIMARY KEY," +
                     "hoten VARCHAR(100)," +
@@ -366,6 +363,7 @@ public class SinhVien extends JPanel {
                     "email VARCHAR(100))";
             stmt.executeUpdate(sqlStudents);
 
+            //Tạo bảng courses để lưu thông tin môn học của sinh viên
             String sqlCourses = "CREATE TABLE IF NOT EXISTS courses (" +
                     "id SERIAL PRIMARY KEY," +
                     "mssv VARCHAR(50) REFERENCES students(mssv)," +
@@ -388,6 +386,7 @@ public class SinhVien extends JPanel {
         }
     }
 
+    //Lưu thông tin sinh viên và các môn học
     private void saveToDatabase() {
         Connection conn = null;
         PreparedStatement pstmtStudent = null;
@@ -494,6 +493,7 @@ public class SinhVien extends JPanel {
         }
     }
 
+    //Xóa toàn bộ dữ liệu trên giao diện để chuẩn bị cho lần nhập mới
     private void clearForm() {
         HoTen_text.setText("");
         Mssv_text.setText("");

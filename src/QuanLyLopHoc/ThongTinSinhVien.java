@@ -70,10 +70,11 @@ public class ThongTinSinhVien extends JFrame {
         this.maMonList = new ArrayList<>(Arrays.asList(maMon.split(", ")));
         this.soTinList = new ArrayList<>(Arrays.asList(soTin.split(", ")));
         this.thoiGianList = new ArrayList<>(Arrays.asList(thoiGian.split(", ")));
-        initialize();
-        loadDataToFields();
+        initialize(); //tạo giao diện
+        loadDataToFields(); //hiển thị dữ liệu
     }
 
+    //Khởi tạo giao diện người dùng
     private void initialize() {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setBounds(100, 100, 895, 652);
@@ -85,7 +86,6 @@ public class ThongTinSinhVien extends JFrame {
         ThongTinSinhVien.setLayout(null);
         setContentPane(ThongTinSinhVien);
 
-        // Panel tiêu đề
         JPanel panel = new JPanel();
         panel.setBackground(new Color(255, 204, 0));
         panel.setBounds(0, 0, 881, 57);
@@ -250,7 +250,7 @@ public class ThongTinSinhVien extends JFrame {
         NopBaiTap_button.setBorder(new LineBorder(Color.WHITE, 1));
         ThongTinSinhVien.add(NopBaiTap_button);
 
-        // Action Listeners
+        // Xử lý sự kiện khi nhấn nút sửa
         Sua_button.addActionListener(e -> {
             loadDataFromDatabase();
             HoTen_text1.setEditable(true);
@@ -261,6 +261,7 @@ public class ThongTinSinhVien extends JFrame {
             XoaMonHoc_button.setEnabled(true);
         });
 
+        //Xử lý sự kiện khi nhấn nút "LƯU".
         Luu_button.addActionListener(e -> {
             if (!validateInput()) {
                 return;
@@ -274,10 +275,10 @@ public class ThongTinSinhVien extends JFrame {
             gioiTinh = (String) GioiTinh_ComboBox.getSelectedItem();
             email = Email_text1.getText().trim();
 
-            saveToDatabase();
+            saveToDatabase(); //lưu vào database
 
-            HoTen_text1.setEditable(false);
-            NgaySinh_text.setEnabled(false);
+            HoTen_text1.setEditable(false);//sửa
+            NgaySinh_text.setEnabled(false);//chọn
             GioiTinh_ComboBox.setEnabled(false);
             Email_text1.setEditable(false);
             Lop_comboBox_1.setEnabled(false);
@@ -286,6 +287,7 @@ public class ThongTinSinhVien extends JFrame {
             updateAvatar(gioiTinh);
         });
 
+        //Xử lý sự kiện khi nhấn nút xóa toàn bộ thông tin
         Xoa_button.addActionListener(e -> {
             int confirm = JOptionPane.showConfirmDialog(this, 
                 "Bạn có chắc chắn muốn xóa toàn bộ thông tin của sinh viên này?", 
@@ -314,6 +316,7 @@ public class ThongTinSinhVien extends JFrame {
             }
         });
 
+        //Xử lý sự kiện khi nhấn nút xóa môn học
         XoaMonHoc_button.addActionListener(e -> {
             int[] selectedRows = table_khoaHoc.getSelectedRows();
             if (selectedRows.length == 0) {
@@ -342,14 +345,16 @@ public class ThongTinSinhVien extends JFrame {
             JOptionPane.showMessageDialog(this, "Đã xóa môn học thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
         });
 
+        //Xử lý sự kiện khi nhấn nút nộp nài 
         NopBaiTap_button.addActionListener(e -> {
             String hoTen = getHoTen();
             String mssv = getMssv();
-            BaiTap baiTapFrame = new BaiTap(hoTen, mssv);
+            BaiTap baiTapFrame = new BaiTap(hoTen, mssv); //hiển thị cửa sổ bài tập mới
             baiTapFrame.setVisible(true);
         });
     }
 
+    //hàm kiểm tra điều kiện để lưu
     private boolean validateInput() {
         if (HoTen_text1.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Họ tên không được để trống!", "Lỗi", JOptionPane.ERROR_MESSAGE);
@@ -414,6 +419,7 @@ public class ThongTinSinhVien extends JFrame {
         return true;
     }
 
+    //hàm cập nhật avatar khi thay đổi giới tính
     private void updateAvatar(String gioiTinh) {
         String avatarPath = "/Icon/avata_nam.png";
         if ("Nữ".equalsIgnoreCase(gioiTinh)) {
@@ -429,6 +435,7 @@ public class ThongTinSinhVien extends JFrame {
         }
     }
 
+    // Hiển thị dữ liệu từ các biến vào giao diện
     private void loadDataToFields() {
         HoTen_text1.setText(hoTen);
         MSSV_text1.setText(mssv);
@@ -456,6 +463,7 @@ public class ThongTinSinhVien extends JFrame {
         updateAvatar(gioiTinh);
     }
 
+    // Tải dữ liệu từ cơ sở dữ liệu và cập nhật giao diện
     private void loadDataFromDatabase() {
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) {
             // Tải thông tin sinh viên
@@ -523,6 +531,7 @@ public class ThongTinSinhVien extends JFrame {
         }
     }
 
+ // Lưu thông tin đã chỉnh sửa vào cơ sở dữ liệu
     private void saveToDatabase() {
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) {
             conn.setAutoCommit(false);
@@ -575,6 +584,7 @@ public class ThongTinSinhVien extends JFrame {
         }
     }
 
+ // Xóa toàn bộ thông tin sinh viên khỏi cơ sở dữ liệu
     private void deleteStudentFromDatabase() {
         Connection conn = null;
         PreparedStatement pstmtBaitap = null;
@@ -661,6 +671,7 @@ public class ThongTinSinhVien extends JFrame {
         }
     }
 
+    //Trả về họ tên sinh viên
     public String getHoTen() {
         return HoTen_text1.getText().trim();
     }
@@ -701,6 +712,7 @@ public class ThongTinSinhVien extends JFrame {
         return String.join(", ", thoiGianList);
     }
 
+    //Khởi chạy ứng dụng
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
             try {

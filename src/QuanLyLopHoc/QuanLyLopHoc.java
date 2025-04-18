@@ -14,25 +14,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class QuanLyLopHoc extends JPanel {
@@ -517,67 +502,94 @@ public class QuanLyLopHoc extends JPanel {
 		}
 	}
 
+	// Xuất dữ liệu từ bảng giao diện ra file Excel
 	private void exportToExcel() {
-		if (tableModel.getRowCount() == 0) {
-			JOptionPane.showMessageDialog(this, "Không có dữ liệu để xuất!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
-			return;
-		}
+	    // Kiểm tra xem bảng có dữ liệu để xuất hay không
+	    if (tableModel == null || tableModel.getRowCount() == 0 || tableModel.getColumnCount() == 0) {
+	        JOptionPane.showMessageDialog(this, "Không có dữ liệu để xuất!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+	        return;
+	    }
 
-		Workbook workbook = new XSSFWorkbook();
-		Sheet sheet = workbook.createSheet("DanhSach");
-		Row headerRow = sheet.createRow(0);
-		for (int i = 0; i < tableModel.getColumnCount(); i++) {
-			Cell cell = headerRow.createCell(i);
-			cell.setCellValue(tableModel.getColumnName(i));
-			CellStyle headerStyle = workbook.createCellStyle();
-			org.apache.poi.ss.usermodel.Font font = workbook.createFont();
-			font.setBold(true);
-			headerStyle.setFont(font);
-			headerStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
-			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-			cell.setCellStyle(headerStyle);
-		}
+	    Workbook workbook = null;
+	    try {
+	        // Tạo workbook và sheet
+	        workbook = new XSSFWorkbook();
+	        Sheet sheet = workbook.createSheet("DanhSach");
 
-		for (int i = 0; i < tableModel.getRowCount(); i++) {
-			Row row = sheet.createRow(i + 1);
-			for (int j = 0; j < tableModel.getColumnCount(); j++) {
-				Cell cell = row.createCell(j);
-				Object value = tableModel.getValueAt(i, j);
-				if (value != null) {
-					if (value instanceof Boolean) {
-						cell.setCellValue((Boolean) value ? "Có" : "Vắng");
-					} else {
-						cell.setCellValue(value.toString());
-					}
-				}
-			}
-		}
+	        // Tạo hàng tiêu đề
+	        Row headerRow = sheet.createRow(0);
+	        for (int i = 0; i < tableModel.getColumnCount(); i++) {
+	            Cell cell = headerRow.createCell(i);
+	            cell.setCellValue(tableModel.getColumnName(i));
+	            CellStyle headerStyle = workbook.createCellStyle();
+	            org.apache.poi.ss.usermodel.Font font = workbook.createFont();
+	            font.setBold(true);
+	            headerStyle.setFont(font);
+	            headerStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+	            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+	            cell.setCellStyle(headerStyle);
+	        }
 
-		for (int i = 0; i < tableModel.getColumnCount(); i++) {
-			sheet.autoSizeColumn(i);
-		}
+	        // Thêm dữ liệu từ tableModel
+	        for (int i = 0; i < tableModel.getRowCount(); i++) {
+	            Row row = sheet.createRow(i + 1);
+	            for (int j = 0; j < tableModel.getColumnCount(); j++) {
+	                Cell cell = row.createCell(j);
+	                Object value = tableModel.getValueAt(i, j);
+	                if (value != null) {
+	                    if (value instanceof Boolean) {
+	                        cell.setCellValue((Boolean) value ? "Có" : "Vắng");
+	                    } else {
+	                        cell.setCellValue(value.toString());
+	                    }
+	                } else {
+	                    cell.setCellValue(""); // Xử lý giá trị null
+	                }
+	            }
+	        }
 
-		JFileChooser fileChooser = new JFileChooser();
-		fileChooser.setDialogTitle("Chọn nơi lưu file Excel");
-		String fileName = HienThi.getText().isEmpty() ? "DanhSach" : HienThi.getText().replace(" ", "_");
-		fileChooser.setSelectedFile(new java.io.File(fileName + ".xlsx"));
-		if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-			try (FileOutputStream fileOut = new FileOutputStream(fileChooser.getSelectedFile())) {
-				workbook.write(fileOut);
-				JOptionPane.showMessageDialog(this, "Xuất file Excel thành công!", "Thông báo",
-						JOptionPane.INFORMATION_MESSAGE);
-			} catch (IOException ex) {
-				JOptionPane.showMessageDialog(this, "Lỗi khi xuất file: " + ex.getMessage(), "Lỗi",
-						JOptionPane.ERROR_MESSAGE);
-				ex.printStackTrace();
-			}
-		}
+	        // Tự động điều chỉnh kích thước cột
+	        for (int i = 0; i < tableModel.getColumnCount(); i++) {
+	            sheet.autoSizeColumn(i);
+	        }
 
-		try {
-			workbook.close();
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
+	        // Tạo tên file mặc định từ HienThi, loại bỏ ký tự không hợp lệ
+	        String fileName = HienThi.getText().isEmpty() ? "DanhSach" : HienThi.getText().replaceAll("[^\\p{L}\\p{N}\\s]", "");
+	        fileName = fileName.trim().replaceAll("\\s+", "_") + ".xlsx";
+
+	        // Mở dialog chọn nơi lưu file
+	        JFileChooser fileChooser = new JFileChooser();
+	        fileChooser.setDialogTitle("Chọn nơi lưu file Excel");
+	        fileChooser.setSelectedFile(new java.io.File(fileName));
+	        if (fileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) {
+	            return; // Người dùng hủy chọn file
+	        }
+
+	        // Ghi file Excel
+	        try (FileOutputStream fileOut = new FileOutputStream(fileChooser.getSelectedFile())) {
+	            workbook.write(fileOut);
+	            JOptionPane.showMessageDialog(this, "Xuất file Excel thành công!", "Thông báo",
+	                    JOptionPane.INFORMATION_MESSAGE);
+	        }
+	    } catch (IOException ex) {
+	        JOptionPane.showMessageDialog(this, "Lỗi khi xuất file: " + ex.getMessage() + 
+	                ". Vui lòng kiểm tra quyền ghi file hoặc đóng file nếu đang mở.", "Lỗi",
+	                JOptionPane.ERROR_MESSAGE);
+	        ex.printStackTrace();
+	    } catch (Exception ex) {
+	        JOptionPane.showMessageDialog(this, "Lỗi không xác định khi xuất file: " + ex.getMessage(), "Lỗi",
+	                JOptionPane.ERROR_MESSAGE);
+	        ex.printStackTrace();
+	    } finally {
+	        // Đóng workbook để giải phóng tài nguyên
+	        if (workbook != null) {
+	            try {
+	                workbook.close();
+	            } catch (IOException ex) {
+	                ex.printStackTrace();
+	            }
+	        }
+	    }
 	}
 
 	private void resetButtonColors(JButton clickedButton) {

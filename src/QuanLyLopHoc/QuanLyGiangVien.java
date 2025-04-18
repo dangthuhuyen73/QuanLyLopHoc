@@ -199,6 +199,7 @@ public class QuanLyGiangVien extends JPanel {
 		}
 	}
 
+	//tim kiem giang vien theo mã GV
 	private void timKiemGiangVien() {
 		String maGV = textField.getText().trim();
 		if (maGV.isEmpty()) {
@@ -295,6 +296,7 @@ public class QuanLyGiangVien extends JPanel {
 		}
 	}
 
+	// Hiển thị chi tiết thông tin giảng viên khi chọn từ bảng
 	private void showLecturerDetails() {
 		int selectedRow = table.getSelectedRow();
 		if (selectedRow == -1) {
@@ -316,6 +318,7 @@ public class QuanLyGiangVien extends JPanel {
 		thongTinFrame.setVisible(true);
 	}
 
+	//xuát excel
 	private void exportToExcel() {
 		Workbook workbook = new XSSFWorkbook();
 		Sheet sheet = workbook.createSheet("DanhSachGiangVien");
@@ -373,6 +376,7 @@ public class QuanLyGiangVien extends JPanel {
 	}
 	// Phương thức đếm số lượng giảng viên
     public int getTeacherCount() {
+    	// Truy vấn bảng giang_vien để đếm tổng số giảng viên
         int count = 0;
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
              Statement stmt = conn.createStatement();
