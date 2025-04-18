@@ -157,14 +157,6 @@ public class QuanLyLopHoc extends JPanel {
 		btnExportExcel.setBounds(714, 125, 150, 31);
 		add(btnExportExcel);
 
-		// Nút Lưu Điểm
-		JButton btnSaveScores = new JButton("Lưu Điểm");
-		btnSaveScores.setFont(new Font("Times New Roman", Font.BOLD, 14));
-		btnSaveScores.setBackground(new Color(0, 204, 204));
-		btnSaveScores.setForeground(Color.WHITE);
-		btnSaveScores.setBounds(514, 125, 150, 31);
-		add(btnSaveScores);
-
 		// Khởi tạo JTable
 		tableModel = new DefaultTableModel(CLASS_COLUMNS, 0) {
 			@Override
@@ -221,14 +213,6 @@ public class QuanLyLopHoc extends JPanel {
 			resetButtonColors(btnExportExcel);
 			btnExportExcel.setBackground(new Color(0, 153, 0));
 			lastClickedButton = btnExportExcel;
-		});
-
-		// Sự kiện Lưu Điểm
-		btnSaveScores.addActionListener(e -> {
-			saveScoresToDatabase();
-			resetButtonColors(btnSaveScores);
-			btnSaveScores.setBackground(new Color(0, 153, 153));
-			lastClickedButton = btnSaveScores;
 		});
 
 		// Sự kiện chọn lớp
