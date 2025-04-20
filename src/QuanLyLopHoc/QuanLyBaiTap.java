@@ -155,109 +155,13 @@ public class QuanLyBaiTap extends JPanel {
         btnXoa.setForeground(new Color(0, 0, 0));
         btnXoa.setBounds(765, 113, 109, 23);
         add(btnXoa);
-        btnXoa.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int selectedRow = tableBaiTap.getSelectedRow();
-                if (selectedRow == -1) {
-                    JOptionPane.showMessageDialog(QuanLyBaiTap.this, "Vui lòng chọn một bài tập để xóa!", "Cảnh báo",
-                            JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-
-                String monHoc = tableModelBaiTap.getValueAt(selectedRow, 1).toString();
-                String tieuDe = tableModelBaiTap.getValueAt(selectedRow, 2).toString();
-
-                if (monHoc.isEmpty() || tieuDe.equals("Không tìm thấy bài tập nào.")) {
-                    JOptionPane.showMessageDialog(QuanLyBaiTap.this, "Không có bài tập hợp lệ để xóa!", "Cảnh báo",
-                            JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-
-                int confirm = JOptionPane.showConfirmDialog(QuanLyBaiTap.this,
-                        "Bạn có chắc muốn xóa bài tập '" + tieuDe + "' của môn '" + monHoc + "'? Toàn bộ dữ liệu liên quan sẽ bị xóa!",
-                        "Xác nhận xóa", JOptionPane.YES_NO_OPTION);
-                if (confirm != JOptionPane.YES_OPTION) {
-                    return;
-                }
-
-                Connection conn = null;
-                PreparedStatement pstmtGiaobaitap = null;
-                PreparedStatement pstmtBaitap = null;
-                try {
-                    conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
-                    conn.setAutoCommit(false); // Bắt đầu transaction
-
-                    // Xóa dữ liệu từ bảng baitap
-                    String sqlBaitap = "DELETE FROM baitap WHERE monhoc = ? AND tieude = ?";
-                    pstmtBaitap = conn.prepareStatement(sqlBaitap);
-                    pstmtBaitap.setString(1, monHoc);
-                    pstmtBaitap.setString(2, tieuDe);
-                    pstmtBaitap.executeUpdate();
-
-                    // Xóa dữ liệu từ bảng giaobaitap
-                    String sqlGiaobaitap = "DELETE FROM giaobaitap WHERE mon_hoc = ? AND tieu_de = ?";
-                    pstmtGiaobaitap = conn.prepareStatement(sqlGiaobaitap);
-                    pstmtGiaobaitap.setString(1, monHoc);
-                    pstmtGiaobaitap.setString(2, tieuDe);
-                    pstmtGiaobaitap.executeUpdate();
-
-                    conn.commit(); // Commit transaction
-
-                    // Cập nhật lại bảng
-                    loadBaiTapDaGiao("");
-                    loadDataFromDatabase("");
-                    tableModelNopBai.setRowCount(0); // Xóa dữ liệu bảng nộp bài
-
-                    JOptionPane.showMessageDialog(QuanLyBaiTap.this, "Xóa bài tập thành công!", "Thành công",
-                            JOptionPane.INFORMATION_MESSAGE);
-
-                } catch (SQLException ex) {
-                    try {
-                        if (conn != null) {
-                            conn.rollback(); // Rollback nếu có lỗi
-                        }
-                    } catch (SQLException rollbackEx) {
-                        rollbackEx.printStackTrace();
-                    }
-                    JOptionPane.showMessageDialog(QuanLyBaiTap.this, "Lỗi khi xóa bài tập: " + ex.getMessage(), "Lỗi",
-                            JOptionPane.ERROR_MESSAGE);
-                    ex.printStackTrace();
-                } finally {
-                    try {
-                        if (pstmtBaitap != null) pstmtBaitap.close();
-                        if (pstmtGiaobaitap != null) pstmtGiaobaitap.close();
-                        if (conn != null) conn.close();
-                    } catch (SQLException closeEx) {
-                        closeEx.printStackTrace();
-                    }
-                }
-            }
-        });
 
         loadDataFromDatabase("");
         loadBaiTapDaGiao("");
 
-        btnTimKiem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String monHoc = (String) TimMon_comboBox.getSelectedItem();
-                if (monHoc != null && !monHoc.isEmpty()) {
-                    loadDataFromDatabase(monHoc);
-                    loadBaiTapDaGiao(monHoc);
-                } else {
-                    loadDataFromDatabase("");
-                    loadBaiTapDaGiao("");
-                }
-            }
-        });
-
-        btnXuat.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                exportToExcel();
-            }
-        });
+        btnXoa.addActionListener(e -> Xoa());
+        btnTimKiem.addActionListener(e -> timKiem());
+        btnXuat.addActionListener(e -> exportToExcel());
 
         tableBaiTap.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -276,6 +180,94 @@ public class QuanLyBaiTap extends JPanel {
                 }
             }
         });
+    }
+    
+    private void Xoa() {
+    	int selectedRow = tableBaiTap.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(QuanLyBaiTap.this, "Vui lòng chọn một bài tập để xóa!", "Cảnh báo",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        String monHoc = tableModelBaiTap.getValueAt(selectedRow, 1).toString();
+        String tieuDe = tableModelBaiTap.getValueAt(selectedRow, 2).toString();
+
+        if (monHoc.isEmpty() || tieuDe.equals("Không tìm thấy bài tập nào.")) {
+            JOptionPane.showMessageDialog(QuanLyBaiTap.this, "Không có bài tập hợp lệ để xóa!", "Cảnh báo",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(QuanLyBaiTap.this,
+                "Bạn có chắc muốn xóa bài tập '" + tieuDe + "' của môn '" + monHoc + "'? Toàn bộ dữ liệu liên quan sẽ bị xóa!",
+                "Xác nhận xóa", JOptionPane.YES_NO_OPTION);
+        if (confirm != JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        Connection conn = null;
+        PreparedStatement pstmtGiaobaitap = null;
+        PreparedStatement pstmtBaitap = null;
+        try {
+            conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+            conn.setAutoCommit(false); // Bắt đầu transaction
+
+            // Xóa dữ liệu từ bảng baitap
+            String sqlBaitap = "DELETE FROM baitap WHERE monhoc = ? AND tieude = ?";
+            pstmtBaitap = conn.prepareStatement(sqlBaitap);
+            pstmtBaitap.setString(1, monHoc);
+            pstmtBaitap.setString(2, tieuDe);
+            pstmtBaitap.executeUpdate();
+
+            // Xóa dữ liệu từ bảng giaobaitap
+            String sqlGiaobaitap = "DELETE FROM giaobaitap WHERE mon_hoc = ? AND tieu_de = ?";
+            pstmtGiaobaitap = conn.prepareStatement(sqlGiaobaitap);
+            pstmtGiaobaitap.setString(1, monHoc);
+            pstmtGiaobaitap.setString(2, tieuDe);
+            pstmtGiaobaitap.executeUpdate();
+
+            conn.commit(); // Commit transaction
+
+            // Cập nhật lại bảng
+            loadBaiTapDaGiao("");
+            loadDataFromDatabase("");
+            tableModelNopBai.setRowCount(0); // Xóa dữ liệu bảng nộp bài
+
+            JOptionPane.showMessageDialog(QuanLyBaiTap.this, "Xóa bài tập thành công!", "Thành công",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+        } catch (SQLException ex) {
+            try {
+                if (conn != null) {
+                    conn.rollback(); // Rollback nếu có lỗi
+                }
+            } catch (SQLException rollbackEx) {
+                rollbackEx.printStackTrace();
+            }
+            JOptionPane.showMessageDialog(QuanLyBaiTap.this, "Lỗi khi xóa bài tập: " + ex.getMessage(), "Lỗi",
+                    JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+        } finally {
+            try {
+                if (pstmtBaitap != null) pstmtBaitap.close();
+                if (pstmtGiaobaitap != null) pstmtGiaobaitap.close();
+                if (conn != null) conn.close();
+            } catch (SQLException closeEx) {
+                closeEx.printStackTrace();
+            }
+        }
+    }
+    
+    private void timKiem() {
+    	String monHoc = (String) TimMon_comboBox.getSelectedItem();
+        if (monHoc != null && !monHoc.isEmpty()) {
+            loadDataFromDatabase(monHoc);
+            loadBaiTapDaGiao(monHoc);
+        } else {
+            loadDataFromDatabase("");
+            loadBaiTapDaGiao("");
+        }
     }
 
     private void loadBaiTapDaGiao(String monHocFilter) {

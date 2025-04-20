@@ -185,100 +185,105 @@ public class GiaoBaiTap extends JFrame {
         Giaobai_bnt.setBounds(359, 562, 162, 42); // Căn giữa
         contentPane.add(Giaobai_bnt);
 
-        // Sự kiện cho nút GIAO BÀI
+     // Sự kiện cho nút GIAO BÀI
         Giaobai_bnt.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String tenGV = TenGV_text.getText().trim();
-                String monHoc = Mon_text.getText().trim(); // Lấy từ JTextField
-                String tieuDe = TieuDe_Text.getText().trim();
-                String noiDung = ND_textArea.getText().trim();
-                Date selectedDate = NgayNop.getDate();
-                LocalTime selectedTime = timePicker.getTime(); // Lấy thời gian từ TimePicker
-
-                // Kiểm tra thông tin đầu vào
-                if (tenGV.isEmpty() || monHoc.isEmpty()) {
-                    JOptionPane.showMessageDialog(GiaoBaiTap.this,
-                            "Vui lòng điền đầy đủ thông tin giảng viên và môn học!", "Cảnh báo",
-                            JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-
-                if (tieuDe.isEmpty()) {
-                    JOptionPane.showMessageDialog(GiaoBaiTap.this, "Vui lòng điền tiêu đề bài tập!", "Cảnh báo",
-                            JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-
-                if (noiDung.isEmpty()) {
-                    JOptionPane.showMessageDialog(GiaoBaiTap.this, "Vui lòng điền nội dung bài tập!", "Cảnh báo",
-                            JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-
-                if (selectedDate == null) {
-                    JOptionPane.showMessageDialog(GiaoBaiTap.this, "Vui lòng chọn ngày hạn nộp hợp lệ!", "Cảnh báo",
-                            JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-
-                if (selectedTime == null) {
-                    JOptionPane.showMessageDialog(GiaoBaiTap.this, "Vui lòng chọn giờ hạn nộp hợp lệ!", "Cảnh báo",
-                            JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-
-                // Kết hợp ngày và giờ thành một đối tượng Date
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTime(selectedDate);
-                int hour = selectedTime.getHour();
-                int minute = selectedTime.getMinute();
-                calendar.set(Calendar.HOUR_OF_DAY, hour);
-                calendar.set(Calendar.MINUTE, minute);
-                calendar.set(Calendar.SECOND, 0);
-                calendar.set(Calendar.MILLISECOND, 0);
-                Date hanNop = calendar.getTime();
-
-                // Kiểm tra hạn nộp phải sau thời gian hiện tại
-                Date currentTime = new Date();
-                if (hanNop.before(currentTime) || hanNop.equals(currentTime)) {
-                    JOptionPane.showMessageDialog(GiaoBaiTap.this,
-                            "Hạn nộp phải sau thời gian hiện tại!", "Cảnh báo",
-                            JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-
-                // Lưu vào database
-                String insertSQL = "INSERT INTO giaobaitap (ten_giang_vien, mon_hoc, tieu_de, noi_dung, han_nop) VALUES (?, ?, ?, ?, ?)";
-                try (Connection conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
-                     PreparedStatement pstmt = conn.prepareStatement(insertSQL)) {
-                    pstmt.setString(1, tenGV);
-                    pstmt.setString(2, monHoc);
-                    pstmt.setString(3, tieuDe);
-                    pstmt.setString(4, noiDung);
-                    pstmt.setTimestamp(5, new java.sql.Timestamp(hanNop.getTime()));
-                    pstmt.executeUpdate();
-
-                    // Thông báo thành công
-                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
-                    String hanNopStr = sdf.format(hanNop);
-                    String thongBao = "📌 Giao bài thành công!\n\n" +
-                            "Tiêu đề: " + tieuDe + "\n" +
-                            "Giảng viên: " + tenGV + "\n" +
-                            "Môn học: " + monHoc + "\n" +
-                            "Hạn nộp: " + hanNopStr;
-                    JOptionPane.showMessageDialog(GiaoBaiTap.this, thongBao, "Thành công",
-                            JOptionPane.INFORMATION_MESSAGE);
-
-                    // Đóng cửa sổ sau khi giao bài thành công
-                    dispose();
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                    JOptionPane.showMessageDialog(GiaoBaiTap.this, "Lỗi khi lưu vào database: " + ex.getMessage(),
-                            "Lỗi", JOptionPane.ERROR_MESSAGE);
-                }
+                GiaoBai();
             }
         });
+    }
+    
+ // Hàm xử lý sự kiện giao bài tập
+    private void GiaoBai() {
+        String tenGV = TenGV_text.getText().trim();
+        String monHoc = Mon_text.getText().trim();
+        String tieuDe = TieuDe_Text.getText().trim();
+        String noiDung = ND_textArea.getText().trim();
+        Date selectedDate = NgayNop.getDate();
+        LocalTime selectedTime = timePicker.getTime();
+
+        // Kiểm tra thông tin đầu vào
+        if (tenGV.isEmpty() || monHoc.isEmpty()) {
+            JOptionPane.showMessageDialog(GiaoBaiTap.this,
+                    "Vui lòng điền đầy đủ thông tin giảng viên và môn học!", "Cảnh báo",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        if (tieuDe.isEmpty()) {
+            JOptionPane.showMessageDialog(GiaoBaiTap.this, "Vui lòng điền tiêu đề bài tập!", "Cảnh báo",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        if (noiDung.isEmpty()) {
+            JOptionPane.showMessageDialog(GiaoBaiTap.this, "Vui lòng điền nội dung bài tập!", "Cảnh báo",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        if (selectedDate == null) {
+            JOptionPane.showMessageDialog(GiaoBaiTap.this, "Vui lòng chọn ngày hạn nộp hợp lệ!", "Cảnh báo",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        if (selectedTime == null) {
+            JOptionPane.showMessageDialog(GiaoBaiTap.this, "Vui lòng chọn giờ hạn nộp hợp lệ!", "Cảnh báo",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Kết hợp ngày và giờ thành một đối tượng Date
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(selectedDate);
+        int hour = selectedTime.getHour();
+        int minute = selectedTime.getMinute();
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
+        calendar.set(Calendar.MINUTE, minute);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        Date hanNop = calendar.getTime();
+
+        // Kiểm tra hạn nộp phải sau thời gian hiện tại
+        Date currentTime = new Date();
+        if (hanNop.before(currentTime) || hanNop.equals(currentTime)) {
+            JOptionPane.showMessageDialog(GiaoBaiTap.this,
+                    "Hạn nộp phải sau thời gian hiện tại!", "Cảnh báo",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Lưu vào database
+        String insertSQL = "INSERT INTO giaobaitap (ten_giang_vien, mon_hoc, tieu_de, noi_dung, han_nop) VALUES (?, ?, ?, ?, ?)";
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+             PreparedStatement pstmt = conn.prepareStatement(insertSQL)) {
+            pstmt.setString(1, tenGV);
+            pstmt.setString(2, monHoc);
+            pstmt.setString(3, tieuDe);
+            pstmt.setString(4, noiDung);
+            pstmt.setTimestamp(5, new java.sql.Timestamp(hanNop.getTime()));
+            pstmt.executeUpdate();
+
+            // Thông báo thành công
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
+            String hanNopStr = sdf.format(hanNop);
+            String thongBao = "📌 Giao bài thành công!\n\n" +
+                    "Tiêu đề: " + tieuDe + "\n" +
+                    "Giảng viên: " + tenGV + "\n" +
+                    "Môn học: " + monHoc + "\n" +
+                    "Hạn nộp: " + hanNopStr;
+            JOptionPane.showMessageDialog(GiaoBaiTap.this, thongBao, "Thành công",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+            // Đóng cửa sổ sau khi giao bài thành công
+            dispose();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(GiaoBaiTap.this, "Lỗi khi lưu vào database: " + ex.getMessage(),
+                    "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     public static void main(String[] args) {

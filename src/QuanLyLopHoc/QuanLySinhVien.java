@@ -111,37 +111,10 @@ public class QuanLySinhVien extends JPanel {
 		scrollPane.setBounds(23, 196, 848, 433);
 		add(scrollPane);
 
-		// Sự kiện cho nút Xuất Excel
-		btnExport.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				exportToExcel();
-			}
-		});
-
-		// Sự kiện cho nút Tìm Kiếm
-		btnTimKiem.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				searchStudentByMSSV();
-			}
-		});
-
-		// Sự kiện cho nút Thêm
-		btnAdd.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				showAddStudentPanel();
-			}
-		});
-
-		// Sự kiện cho nút Thông Tin Chi Tiết
-		btn_TTSV.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				showStudentDetails();
-			}
-		});
+		btnAdd.addActionListener(e -> showAddStudentPanel());
+        btnExport.addActionListener(e -> exportToExcel());
+        btnTimKiem.addActionListener(e -> searchStudentByMSSV());
+        btn_TTSV.addActionListener(e -> showStudentDetails());
 
 		// Tải dữ liệu từ database khi khởi tạo
 		loadStudentData();

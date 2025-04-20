@@ -213,13 +213,6 @@ public class SinhVien extends JPanel {
         Luu_button.setBounds(226, 563, 120, 44);
         add(Luu_button);
 
-        Luu_button.addActionListener(e -> {
-            if (!validateInput()) {  //Kiểm tra tính hợp lệ
-                return;
-            }
-            saveToDatabase(); //lưu thông tin sinh viên vào Database
-        });
-
         JButton xuat_button = new JButton("XUẤT");
         xuat_button.setBackground(new Color(255, 215, 0));
         xuat_button.setFont(new Font("Times New Roman", Font.BOLD, 15));
@@ -227,27 +220,40 @@ public class SinhVien extends JPanel {
         xuat_button.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
         add(xuat_button);
 
-        xuat_button.addActionListener(e -> {
-            if (tempStudentInfo == null) {
-                JOptionPane.showMessageDialog(this,
-                        "Chưa có dữ liệu nào được lưu. Vui lòng nhấn LƯU trước!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            } else {
-                EventQueue.invokeLater(() -> {
-                    ThongTinSinhVien frame = new ThongTinSinhVien(  //mở ra cửa sổ ThongTinSinhVien
-                            tempStudentInfo.getHoTen(),
-                            tempStudentInfo.getMssv(),
-                            tempStudentInfo.getLop(),
-                            tempStudentInfo.getNgaySinh(),
-                            tempStudentInfo.getGioiTinh(),
-                            tempStudentInfo.getEmail(),
-                            tempStudentInfo.getMonHoc(),
-                            tempStudentInfo.getMaMon(),
-                            tempStudentInfo.getSoTin(),
-                            tempStudentInfo.getThoiGian());
-                    frame.setVisible(true);
-                });
-            }
-        });
+     // Gắn sự kiện cho các nút
+        Luu_button.addActionListener(e -> Luu());
+        xuat_button.addActionListener(e -> Xuat());
+    }
+    
+ // Xử lý sự kiện nút LƯU
+    private void Luu() {
+        if (!validateInput()) {
+            return;
+        }
+        saveToDatabase();
+    }
+
+    // Xử lý sự kiện nút XUẤT
+    private void Xuat() {
+        if (tempStudentInfo == null) {
+            JOptionPane.showMessageDialog(this,
+                    "Chưa có dữ liệu nào được lưu. Vui lòng nhấn LƯU trước!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        } else {
+            EventQueue.invokeLater(() -> {
+                ThongTinSinhVien frame = new ThongTinSinhVien(
+                        tempStudentInfo.getHoTen(),
+                        tempStudentInfo.getMssv(),
+                        tempStudentInfo.getLop(),
+                        tempStudentInfo.getNgaySinh(),
+                        tempStudentInfo.getGioiTinh(),
+                        tempStudentInfo.getEmail(),
+                        tempStudentInfo.getMonHoc(),
+                        tempStudentInfo.getMaMon(),
+                        tempStudentInfo.getSoTin(),
+                        tempStudentInfo.getThoiGian());
+                frame.setVisible(true);
+            });
+        }
     }
 
     //Kiểm tra tính hợp lệ của dữ liệu nhập vào trước khi lưu vào cơ sở dữ liệu

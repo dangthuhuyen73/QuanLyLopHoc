@@ -153,29 +153,30 @@ public class DiemDanh extends JFrame {
 		// Tải dữ liệu sinh viên
 		loadStudentData(monGiangDay);
 
-		// Sự kiện nút Sửa
-		btnSua.addActionListener(e -> {
-			if (dateChooser.getDate() == null) {
-				JOptionPane.showMessageDialog(this, "Vui lòng chọn ngày điểm danh!", "Cảnh báo",
-						JOptionPane.WARNING_MESSAGE);
-				return;
-			}
-			table.setEnabled(true);
-		});
-
-		// Sự kiện nút Lưu
-		btnLuu.addActionListener(e -> {
-			if (dateChooser.getDate() == null) {
-				JOptionPane.showMessageDialog(this, "Vui lòng chọn ngày điểm danh!", "Cảnh báo",
-						JOptionPane.WARNING_MESSAGE);
-				return;
-			}
-			saveAttendance(monGiangDay);
-		});
-
-		// Sự kiện nút Xuất Excel
+		btnSua.addActionListener(e -> Sua());
+        btnLuu.addActionListener(e -> Luu());
 		btnXuat.addActionListener(e -> exportToExcel());
 	}
+	
+	// Hàm xử lý sự kiện nút Sửa
+    private void Sua() {
+        if (dateChooser.getDate() == null) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn ngày điểm danh!", "Cảnh báo",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        table.setEnabled(true);
+    }
+
+    // Hàm xử lý sự kiện nút Lưu
+    private void Luu() {
+        if (dateChooser.getDate() == null) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn ngày điểm danh!", "Cảnh báo",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        saveAttendance(monTextField.getText());
+    }
 
 	// Phương thức tạo các bảng cần thiết (students, courses, diemdanh)
 	private boolean createRequiredTables() {

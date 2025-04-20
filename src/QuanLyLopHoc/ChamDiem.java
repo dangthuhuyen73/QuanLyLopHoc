@@ -115,42 +115,11 @@ public class ChamDiem extends JFrame {
         bnt_BaiTap.setBackground(new Color(255, 204, 0));
         bnt_BaiTap.setBounds(511, 69, 110, 30);
         contentPane.add(bnt_BaiTap);
-        bnt_BaiTap.addActionListener(e -> {
-            String monHoc = Mon_text.getText().trim();
-            if (monHoc.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Vui lòng chọn môn học!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-            // Mở giao diện QuanLyBaiTap
-            JFrame quanLyBaiTapFrame = new JFrame("Quản Lý Bài Tập");
-            quanLyBaiTapFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            quanLyBaiTapFrame.setBounds(100, 100, 911, 690);
-            quanLyBaiTapFrame.setLocationRelativeTo(null);
-            
-            QuanLyBaiTap quanLyBaiTap = new QuanLyBaiTap();
-            quanLyBaiTapFrame.getContentPane().add(quanLyBaiTap);
-            quanLyBaiTapFrame.setVisible(true);
-        });
-
+      
         btnLuu.addActionListener(e -> saveScores());
         btnXuat.addActionListener(e -> exportToExcel());
-        
-        btnDiemDanh.addActionListener(e -> {
-            String monHoc = Mon_text.getText().trim();
-            if (monHoc.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Vui lòng chọn môn học!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-            // Mở giao diện QuanLyLopHoc và hiển thị danh sách điểm danh
-            JFrame quanLyFrame = new JFrame("Quản Lý Lớp Học - Điểm Danh");
-            quanLyFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            quanLyFrame.setBounds(100, 100, 911, 690);
-            quanLyFrame.setLocationRelativeTo(null);
-            
-            QuanLyLopHoc quanLyLopHoc = new QuanLyLopHoc(monHoc, true); // true để hiển thị điểm danh
-            quanLyFrame.getContentPane().add(quanLyLopHoc);
-            quanLyFrame.setVisible(true);
-        });
+        bnt_BaiTap.addActionListener(e -> QuanLyBaiTap());
+        btnDiemDanh.addActionListener(e -> DiemDanh());
         
         // Tải dữ liệu ngay khi mở cửa sổ nếu môn học không rỗng
         if (monGiangDay != null && !monGiangDay.trim().isEmpty()) {
@@ -444,6 +413,40 @@ public class ChamDiem extends JFrame {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+    }
+    
+    private void QuanLyBaiTap() {
+        String monHoc = Mon_text.getText().trim();
+        if (monHoc.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn môn học!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        // Mở giao diện QuanLyBaiTap
+        JFrame quanLyBaiTapFrame = new JFrame("Quản Lý Bài Tập");
+        quanLyBaiTapFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        quanLyBaiTapFrame.setBounds(100, 100, 911, 690);
+        quanLyBaiTapFrame.setLocationRelativeTo(null);
+        
+        QuanLyBaiTap quanLyBaiTap = new QuanLyBaiTap();
+        quanLyBaiTapFrame.getContentPane().add(quanLyBaiTap);
+        quanLyBaiTapFrame.setVisible(true);
+    }
+
+    private void DiemDanh() {
+        String monHoc = Mon_text.getText().trim();
+        if (monHoc.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn môn học!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        // Mở giao diện QuanLyLopHoc và hiển thị danh sách điểm danh
+        JFrame quanLyFrame = new JFrame("Quản Lý Lớp Học - Điểm Danh");
+        quanLyFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        quanLyFrame.setBounds(100, 100, 911, 690);
+        quanLyFrame.setLocationRelativeTo(null);
+        
+        QuanLyLopHoc quanLyLopHoc = new QuanLyLopHoc(monHoc, true); // true để hiển thị điểm danh
+        quanLyFrame.getContentPane().add(quanLyLopHoc);
+        quanLyFrame.setVisible(true);
     }
  // Khởi chạy ứng dụng
     public static void main(String[] args) {

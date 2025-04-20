@@ -34,6 +34,7 @@ public class ThongTinSinhVien extends JFrame {
     private JLabel avata;
     private JTable table_khoaHoc;
     private DefaultTableModel tableModel;
+    private JButton XoaMonHoc_button;
 
     // Các thuộc tính để lưu dữ liệu
     private String hoTen, mssv, lop, ngaySinh, gioiTinh, email;
@@ -70,11 +71,11 @@ public class ThongTinSinhVien extends JFrame {
         this.maMonList = new ArrayList<>(Arrays.asList(maMon.split(", ")));
         this.soTinList = new ArrayList<>(Arrays.asList(soTin.split(", ")));
         this.thoiGianList = new ArrayList<>(Arrays.asList(thoiGian.split(", ")));
-        initialize(); //tạo giao diện
-        loadDataToFields(); //hiển thị dữ liệu
+        initialize();
+        loadDataToFields();
     }
 
-    //Khởi tạo giao diện người dùng
+    // Khởi tạo giao diện người dùng
     private void initialize() {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setBounds(100, 100, 895, 652);
@@ -208,7 +209,7 @@ public class ThongTinSinhVien extends JFrame {
         ThongTinSinhVien.add(scrollPane);
 
         // Nút Xóa Môn Học
-        JButton XoaMonHoc_button = new JButton("XÓA MÔN HỌC");
+        XoaMonHoc_button = new JButton("XÓA MÔN HỌC");
         XoaMonHoc_button.setBounds(252, 445, 120, 44);
         XoaMonHoc_button.setFont(new Font("Times New Roman", Font.BOLD, 15));
         XoaMonHoc_button.setBackground(new Color(50, 150, 255));
@@ -250,111 +251,117 @@ public class ThongTinSinhVien extends JFrame {
         NopBaiTap_button.setBorder(new LineBorder(Color.WHITE, 1));
         ThongTinSinhVien.add(NopBaiTap_button);
 
-        // Xử lý sự kiện khi nhấn nút sửa
-        Sua_button.addActionListener(e -> {
-            loadDataFromDatabase();
-            HoTen_text1.setEditable(true);
-            NgaySinh_text.setEnabled(true);
-            GioiTinh_ComboBox.setEnabled(true);
-            Email_text1.setEditable(true);
-            Lop_comboBox_1.setEnabled(true);
-            XoaMonHoc_button.setEnabled(true);
-        });
-
-        //Xử lý sự kiện khi nhấn nút "LƯU".
-        Luu_button.addActionListener(e -> {
-            if (!validateInput()) {
-                return;
-            }
-
-            hoTen = HoTen_text1.getText().trim();
-            mssv = MSSV_text1.getText().trim();
-            lop = (String) Lop_comboBox_1.getSelectedItem();
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-            ngaySinh = sdf.format(NgaySinh_text.getDate());
-            gioiTinh = (String) GioiTinh_ComboBox.getSelectedItem();
-            email = Email_text1.getText().trim();
-
-            saveToDatabase(); //lưu vào database
-
-            HoTen_text1.setEditable(false);//sửa
-            NgaySinh_text.setEnabled(false);//chọn
-            GioiTinh_ComboBox.setEnabled(false);
-            Email_text1.setEditable(false);
-            Lop_comboBox_1.setEnabled(false);
-            XoaMonHoc_button.setEnabled(false);
-
-            updateAvatar(gioiTinh);
-        });
-
-        //Xử lý sự kiện khi nhấn nút xóa toàn bộ thông tin
-        Xoa_button.addActionListener(e -> {
-            int confirm = JOptionPane.showConfirmDialog(this, 
-                "Bạn có chắc chắn muốn xóa toàn bộ thông tin của sinh viên này?", 
-                "Xác nhận xóa", 
-                JOptionPane.YES_NO_OPTION);
-            if (confirm == JOptionPane.YES_OPTION) {
-                deleteStudentFromDatabase();
-                // Xóa dữ liệu trên giao diện
-                HoTen_text1.setText("");
-                MSSV_text1.setText("");
-                Lop_comboBox_1.setSelectedIndex(0);
-                NgaySinh_text.setDate(null);
-                GioiTinh_ComboBox.setSelectedIndex(0);
-                Email_text1.setText("");
-                tableModel.setRowCount(0);
-                monHocList.clear();
-                maMonList.clear();
-                soTinList.clear();
-                thoiGianList.clear();
-                avata.setIcon(null);
-                avata.setText("");
-                JOptionPane.showMessageDialog(this, 
-                    "Đã xóa thông tin sinh viên thành công!", 
-                    "Thành công", 
-                    JOptionPane.INFORMATION_MESSAGE);
-            }
-        });
-
-        //Xử lý sự kiện khi nhấn nút xóa môn học
-        XoaMonHoc_button.addActionListener(e -> {
-            int[] selectedRows = table_khoaHoc.getSelectedRows();
-            if (selectedRows.length == 0) {
-                JOptionPane.showMessageDialog(this, "Vui lòng chọn ít nhất một môn học để xóa!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa các môn học đã chọn?", "Xác nhận", JOptionPane.YES_NO_OPTION);
-            if (confirm != JOptionPane.YES_OPTION) {
-                return;
-            }
-
-            List<Integer> rowsToRemove = new ArrayList<>();
-            for (int row : selectedRows) {
-                rowsToRemove.add(row);
-            }
-            rowsToRemove.sort((a, b) -> b - a);
-            for (int row : rowsToRemove) {
-                monHocList.remove(row);
-                maMonList.remove(row);
-                soTinList.remove(row);
-                thoiGianList.remove(row);
-                tableModel.removeRow(row);
-            }
-
-            JOptionPane.showMessageDialog(this, "Đã xóa môn học thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
-        });
-
-        //Xử lý sự kiện khi nhấn nút nộp nài 
-        NopBaiTap_button.addActionListener(e -> {
-            String hoTen = getHoTen();
-            String mssv = getMssv();
-            BaiTap baiTapFrame = new BaiTap(hoTen, mssv); //hiển thị cửa sổ bài tập mới
-            baiTapFrame.setVisible(true);
-        });
+        // Gắn sự kiện cho các nút
+        Sua_button.addActionListener(e -> Edit());
+        Luu_button.addActionListener(e -> Save());
+        Xoa_button.addActionListener(e -> Xoa());
+        XoaMonHoc_button.addActionListener(e -> XoaMonHoc());
+        NopBaiTap_button.addActionListener(e -> NopBaiTap());
     }
 
-    //hàm kiểm tra điều kiện để lưu
+    // Xử lý sự kiện nút Sửa
+    private void Edit() {
+        loadDataFromDatabase();
+        HoTen_text1.setEditable(true);
+        NgaySinh_text.setEnabled(true);
+        GioiTinh_ComboBox.setEnabled(true);
+        Email_text1.setEditable(true);
+        Lop_comboBox_1.setEnabled(true);
+        XoaMonHoc_button.setEnabled(true);
+    }
+
+    // Xử lý sự kiện nút Lưu
+    private void Save() {
+        if (!validateInput()) {
+            return;
+        }
+
+        hoTen = HoTen_text1.getText().trim();
+        mssv = MSSV_text1.getText().trim();
+        lop = (String) Lop_comboBox_1.getSelectedItem();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        ngaySinh = sdf.format(NgaySinh_text.getDate());
+        gioiTinh = (String) GioiTinh_ComboBox.getSelectedItem();
+        email = Email_text1.getText().trim();
+
+        saveToDatabase();
+
+        HoTen_text1.setEditable(false);
+        NgaySinh_text.setEnabled(false);
+        GioiTinh_ComboBox.setEnabled(false);
+        Email_text1.setEditable(false);
+        Lop_comboBox_1.setEnabled(false);
+        XoaMonHoc_button.setEnabled(false);
+
+        updateAvatar(gioiTinh);
+    }
+
+    // Xử lý sự kiện nút Xóa
+    private void Xoa() {
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "Bạn có chắc chắn muốn xóa toàn bộ thông tin của sinh viên này?",
+                "Xác nhận xóa",
+                JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            deleteStudentFromDatabase();
+            HoTen_text1.setText("");
+            MSSV_text1.setText("");
+            Lop_comboBox_1.setSelectedIndex(0);
+            NgaySinh_text.setDate(null);
+            GioiTinh_ComboBox.setSelectedIndex(0);
+            Email_text1.setText("");
+            tableModel.setRowCount(0);
+            monHocList.clear();
+            maMonList.clear();
+            soTinList.clear();
+            thoiGianList.clear();
+            avata.setIcon(null);
+            avata.setText("");
+            JOptionPane.showMessageDialog(this,
+                    "Đã xóa thông tin sinh viên thành công!",
+                    "Thành công",
+                    JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    // Xử lý sự kiện nút Xóa Môn Học
+    private void XoaMonHoc() {
+        int[] selectedRows = table_khoaHoc.getSelectedRows();
+        if (selectedRows.length == 0) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn ít nhất một môn học để xóa!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa các môn học đã chọn?", "Xác nhận", JOptionPane.YES_NO_OPTION);
+        if (confirm != JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        List<Integer> rowsToRemove = new ArrayList<>();
+        for (int row : selectedRows) {
+            rowsToRemove.add(row);
+        }
+        rowsToRemove.sort((a, b) -> b - a);
+        for (int row : rowsToRemove) {
+            monHocList.remove(row);
+            maMonList.remove(row);
+            soTinList.remove(row);
+            thoiGianList.remove(row);
+            tableModel.removeRow(row);
+        }
+
+        JOptionPane.showMessageDialog(this, "Đã xóa môn học thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    // Xử lý sự kiện nút Nộp Bài Tập
+    private void NopBaiTap() {
+        String hoTen = getHoTen();
+        String mssv = getMssv();
+        BaiTap baiTapFrame = new BaiTap(hoTen, mssv);
+        baiTapFrame.setVisible(true);
+    }
+
+    // Hàm kiểm tra điều kiện để lưu
     private boolean validateInput() {
         if (HoTen_text1.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Họ tên không được để trống!", "Lỗi", JOptionPane.ERROR_MESSAGE);
@@ -419,7 +426,7 @@ public class ThongTinSinhVien extends JFrame {
         return true;
     }
 
-    //hàm cập nhật avatar khi thay đổi giới tính
+    // Hàm cập nhật avatar khi thay đổi giới tính
     private void updateAvatar(String gioiTinh) {
         String avatarPath = "/Icon/avata_nam.png";
         if ("Nữ".equalsIgnoreCase(gioiTinh)) {
@@ -454,10 +461,10 @@ public class ThongTinSinhVien extends JFrame {
         tableModel.setRowCount(0);
         for (int i = 0; i < monHocList.size(); i++) {
             tableModel.addRow(new Object[]{
-                monHocList.get(i),
-                maMonList.get(i),
-                soTinList.get(i),
-                thoiGianList.get(i)
+                    monHocList.get(i),
+                    maMonList.get(i),
+                    soTinList.get(i),
+                    thoiGianList.get(i)
             });
         }
         updateAvatar(gioiTinh);
@@ -531,46 +538,82 @@ public class ThongTinSinhVien extends JFrame {
         }
     }
 
- // Lưu thông tin đã chỉnh sửa vào cơ sở dữ liệu
+    // Lưu thông tin đã chỉnh sửa vào cơ sở dữ liệu
     private void saveToDatabase() {
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) {
+        Connection conn = null;
+        PreparedStatement pstmtBaitap = null;
+        PreparedStatement pstmtCourses = null;
+        PreparedStatement pstmtDiem = null;
+        PreparedStatement pstmtDiemDanh = null;
+        PreparedStatement pstmtChamDiem = null;
+        PreparedStatement pstmtStudents = null;
+        PreparedStatement pstmtInsertStudent = null;
+        PreparedStatement pstmtInsertCourse = null;
+
+        try {
+            conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
             conn.setAutoCommit(false);
 
-            // Xóa thông tin cũ
-            try (PreparedStatement pstmtDeleteCourse = conn.prepareStatement("DELETE FROM courses WHERE mssv = ?");
-                 PreparedStatement pstmtDeleteStudent = conn.prepareStatement("DELETE FROM students WHERE mssv = ?")) {
-                pstmtDeleteCourse.setString(1, originalMssv);
-                pstmtDeleteCourse.executeUpdate();
+            // Xóa bản ghi trong các bảng phụ thuộc trước khi xóa students
+            // 1. Xóa bản ghi trong bảng baitap
+            String sqlBaitap = "DELETE FROM baitap WHERE mssv = ?";
+            pstmtBaitap = conn.prepareStatement(sqlBaitap);
+            pstmtBaitap.setString(1, originalMssv);
+            pstmtBaitap.executeUpdate();
 
-                pstmtDeleteStudent.setString(1, originalMssv);
-                pstmtDeleteStudent.executeUpdate();
-            }
+            // 2. Xóa bản ghi trong bảng diem (nếu tồn tại)
+            String sqlDiem = "DELETE FROM diem WHERE mssv = ?";
+            pstmtDiem = conn.prepareStatement(sqlDiem);
+            pstmtDiem.setString(1, originalMssv);
+            pstmtDiem.executeUpdate();
+
+            // 3. Xóa bản ghi trong bảng diemdanh (nếu tồn tại)
+            String sqlDiemDanh = "DELETE FROM diemdanh WHERE mssv = ?";
+            pstmtDiemDanh = conn.prepareStatement(sqlDiemDanh);
+            pstmtDiemDanh.setString(1, originalMssv);
+            pstmtDiemDanh.executeUpdate();
+
+            // 4. Xóa bản ghi trong bảng chamdiem (nếu tồn tại)
+            String sqlChamDiem = "DELETE FROM chamdiem WHERE mssv = ?";
+            pstmtChamDiem = conn.prepareStatement(sqlChamDiem);
+            pstmtChamDiem.setString(1, originalMssv);
+            pstmtChamDiem.executeUpdate();
+
+            // 5. Xóa bản ghi trong bảng courses
+            String sqlCourses = "DELETE FROM courses WHERE mssv = ?";
+            pstmtCourses = conn.prepareStatement(sqlCourses);
+            pstmtCourses.setString(1, originalMssv);
+            pstmtCourses.executeUpdate();
+
+            // 6. Xóa bản ghi trong bảng students
+            String sqlStudents = "DELETE FROM students WHERE mssv = ?";
+            pstmtStudents = conn.prepareStatement(sqlStudents);
+            pstmtStudents.setString(1, originalMssv);
+            pstmtStudents.executeUpdate();
 
             // Thêm thông tin sinh viên mới
-            try (PreparedStatement pstmtInsertStudent = conn.prepareStatement(
-                    "INSERT INTO students (mssv, hoten, ngaysinh, gioitinh, lop, email) VALUES (?, ?, ?, ?, ?, ?)")) {
-                pstmtInsertStudent.setString(1, mssv);
-                pstmtInsertStudent.setString(2, hoTen);
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                Date date = NgaySinh_text.getDate();
-                pstmtInsertStudent.setDate(3, date != null ? new java.sql.Date(date.getTime()) : null);
-                pstmtInsertStudent.setString(4, gioiTinh);
-                pstmtInsertStudent.setString(5, lop);
-                pstmtInsertStudent.setString(6, email);
-                pstmtInsertStudent.executeUpdate();
-            }
+            String sqlInsertStudent = "INSERT INTO students (mssv, hoten, ngaysinh, gioitinh, lop, email) VALUES (?, ?, ?, ?, ?, ?)";
+            pstmtInsertStudent = conn.prepareStatement(sqlInsertStudent);
+            pstmtInsertStudent.setString(1, mssv);
+            pstmtInsertStudent.setString(2, hoTen);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = NgaySinh_text.getDate();
+            pstmtInsertStudent.setDate(3, date != null ? new java.sql.Date(date.getTime()) : null);
+            pstmtInsertStudent.setString(4, gioiTinh);
+            pstmtInsertStudent.setString(5, lop);
+            pstmtInsertStudent.setString(6, email);
+            pstmtInsertStudent.executeUpdate();
 
             // Thêm thông tin khóa học mới
-            try (PreparedStatement pstmtInsertCourse = conn.prepareStatement(
-                    "INSERT INTO courses (mssv, monhoc, mamon, sotin, thoigian) VALUES (?, ?, ?, ?, ?)")) {
-                for (int i = 0; i < monHocList.size(); i++) {
-                    pstmtInsertCourse.setString(1, mssv);
-                    pstmtInsertCourse.setString(2, monHocList.get(i));
-                    pstmtInsertCourse.setString(3, maMonList.get(i));
-                    pstmtInsertCourse.setInt(4, Integer.parseInt(soTinList.get(i)));
-                    pstmtInsertCourse.setString(5, thoiGianList.get(i));
-                    pstmtInsertCourse.executeUpdate();
-                }
+            String sqlInsertCourse = "INSERT INTO courses (mssv, monhoc, mamon, sotin, thoigian) VALUES (?, ?, ?, ?, ?)";
+            pstmtInsertCourse = conn.prepareStatement(sqlInsertCourse);
+            for (int i = 0; i < monHocList.size(); i++) {
+                pstmtInsertCourse.setString(1, mssv);
+                pstmtInsertCourse.setString(2, monHocList.get(i));
+                pstmtInsertCourse.setString(3, maMonList.get(i));
+                pstmtInsertCourse.setInt(4, Integer.parseInt(soTinList.get(i)));
+                pstmtInsertCourse.setString(5, thoiGianList.get(i));
+                pstmtInsertCourse.executeUpdate();
             }
 
             conn.commit();
@@ -579,12 +622,36 @@ public class ThongTinSinhVien extends JFrame {
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Lỗi khi lưu vào cơ sở dữ liệu: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
             ex.printStackTrace();
+            try {
+                if (conn != null) {
+                    conn.rollback();
+                }
+            } catch (SQLException rollbackEx) {
+                rollbackEx.printStackTrace();
+            }
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Số tín phải là số nguyên!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            try {
+                if (pstmtBaitap != null) pstmtBaitap.close();
+                if (pstmtCourses != null) pstmtCourses.close();
+                if (pstmtDiem != null) pstmtDiem.close();
+                if (pstmtDiemDanh != null) pstmtDiemDanh.close();
+                if (pstmtChamDiem != null) pstmtChamDiem.close();
+                if (pstmtStudents != null) pstmtStudents.close();
+                if (pstmtInsertStudent != null) pstmtInsertStudent.close();
+                if (pstmtInsertCourse != null) pstmtInsertCourse.close();
+                if (conn != null) {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                }
+            } catch (SQLException closeEx) {
+                closeEx.printStackTrace();
+            }
         }
     }
 
- // Xóa toàn bộ thông tin sinh viên khỏi cơ sở dữ liệu
+    // Xóa toàn bộ thông tin sinh viên khỏi cơ sở dữ liệu
     private void deleteStudentFromDatabase() {
         Connection conn = null;
         PreparedStatement pstmtBaitap = null;
@@ -671,7 +738,7 @@ public class ThongTinSinhVien extends JFrame {
         }
     }
 
-    //Trả về họ tên sinh viên
+    // Trả về họ tên sinh viên
     public String getHoTen() {
         return HoTen_text1.getText().trim();
     }
@@ -712,7 +779,7 @@ public class ThongTinSinhVien extends JFrame {
         return String.join(", ", thoiGianList);
     }
 
-    //Khởi chạy ứng dụng
+    // Khởi chạy ứng dụng
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
             try {

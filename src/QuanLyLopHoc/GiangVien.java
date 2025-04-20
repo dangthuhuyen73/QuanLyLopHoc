@@ -133,25 +133,7 @@ public class GiangVien extends JPanel {
 		txtMaMon.setFont(new Font("Times New Roman", Font.PLAIN, 15));
 		txtMaMon.setColumns(10);
 
-		// Xử lý khi chọn môn học
-		comboBoxMonHoc.addItemListener(e -> {
-			String selectedSubject = (String) comboBoxMonHoc.getSelectedItem();
-			if ("Lập Trình Hướng Đối Tượng".equals(selectedSubject)) {
-				txtMaMon.setText("TEL1448");
-			} else if ("Hệ Thống nhúng IOT".equals(selectedSubject)) {
-				txtMaMon.setText("TEL1457");
-			} else if ("Hệ Thống Cảm Biến".equals(selectedSubject)) {
-				txtMaMon.setText("TEL1467");
-			} else if ("Điện Toán Đám Mây".equals(selectedSubject)) {
-				txtMaMon.setText("TEL1447");
-			} else if ("Phát Triển ứng Dụng".equals(selectedSubject)) {
-				txtMaMon.setText("TEL1461");
-			} else if ("Tiếng Anh".equals(selectedSubject)) {
-				txtMaMon.setText("BAS1160");
-			} else {
-				txtMaMon.setText("");
-			}
-		});
+		comboBoxMonHoc.addItemListener(e -> updateMaMon());
 
 		// Nút LƯU
 		JButton btnLuu = new JButton("LƯU");
@@ -160,121 +142,8 @@ public class GiangVien extends JPanel {
 		btnLuu.setBounds(227, 569, 120, 44);
 		add(btnLuu);
 
-		btnLuu.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				// Kiểm tra các trường thông tin
-				String hoTen = HoTen_text.getText().trim();
-				String maGV = MaGV_text.getText().trim();
-				String email = Email_text.getText().trim();
-				String soDienThoai = txtSoDienThoai.getText().trim();
-				String monGiangDay = (String) comboBoxMonHoc.getSelectedItem();
-				String maMon = txtMaMon.getText().trim();
-
-				if (hoTen.isEmpty() || maGV.isEmpty() || email.isEmpty() || soDienThoai.isEmpty()
-						|| monGiangDay.isEmpty() || maMon.isEmpty()) {
-					JOptionPane.showMessageDialog(GiangVien.this, "Vui lòng điền đầy đủ tất cả các thông tin!", "Lỗi",
-							JOptionPane.ERROR_MESSAGE);
-					return;
-				}
-
-				// Kiểm tra định dạng mã giảng viên
-				if (!MAGV_PATTERN.matcher(maGV).matches()) {
-					JOptionPane.showMessageDialog(GiangVien.this,
-							"Mã giảng viên phải có định dạng GV + 3 số (VD: GV123)!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-					return;
-				}
-
-				// Lưu vào database
-                Connection conn = null;
-                PreparedStatement pstmt = null;
-                ResultSet rs = null;
-                try {
-                    conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
-
-                    // Kiểm tra mã GV đã tồn tại
-                    String checkMaGVSql = "SELECT ma_gv FROM giang_vien WHERE ma_gv = ?";
-                    pstmt = conn.prepareStatement(checkMaGVSql);
-                    pstmt.setString(1, maGV);
-                    rs = pstmt.executeQuery();
-
-                    if (rs.next()) {
-                        JOptionPane.showMessageDialog(GiangVien.this,
-                            "Mã giảng viên '" + maGV + "' đã tồn tại trong database!", 
-                            "Lỗi", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                    rs.close();
-                    pstmt.close();
-
-                    // Kiểm tra xem mã môn đã được gán cho giảng viên khác chưa
-                    String checkMonSql = "SELECT ma_gv FROM giang_vien WHERE ma_mon = ?";
-                    pstmt = conn.prepareStatement(checkMonSql);
-                    pstmt.setString(1, maMon);
-                    rs = pstmt.executeQuery();
-
-                    if (rs.next()) {
-                        JOptionPane.showMessageDialog(GiangVien.this,
-                            "Môn học '" + monGiangDay + "' đã được gán cho giảng viên khác!", 
-                            "Lỗi", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                    rs.close();
-                    pstmt.close();
-
-					// Câu lệnh SQL để insert
-					String insertSql = "INSERT INTO giang_vien (ho_ten, ma_gv, email, so_dien_thoai, mon_giang_day, ma_mon) "
-							+ "VALUES (?, ?, ?, ?, ?, ?)";
-
-					pstmt = conn.prepareStatement(insertSql);
-					pstmt.setString(1, hoTen);
-					pstmt.setString(2, maGV);
-					pstmt.setString(3, email);
-					pstmt.setString(4, soDienThoai);
-					pstmt.setString(5, monGiangDay);
-					pstmt.setString(6, maMon);
-
-					// Thực thi insert
-					int rowsAffected = pstmt.executeUpdate();
-
-					if (rowsAffected > 0) {
-						// Lưu vào biến tạm
-						tempHoTen = hoTen;
-						tempMaGV = maGV;
-						tempEmail = email;
-						tempSoDienThoai = soDienThoai;
-						tempMonGiangDay = monGiangDay;
-						tempMaMon = maMon;
-
-						JOptionPane.showMessageDialog(GiangVien.this, "Lưu thông tin thành công!", "Thành công",
-								JOptionPane.INFORMATION_MESSAGE);
-
-						// Xóa dữ liệu trong các trường sau khi lưu
-						HoTen_text.setText("");
-						MaGV_text.setText("");
-						Email_text.setText("");
-						txtSoDienThoai.setText("");
-						comboBoxMonHoc.setSelectedIndex(0);
-						txtMaMon.setText("");
-					}
-				} catch (SQLException ex) {
-					JOptionPane.showMessageDialog(GiangVien.this, "Lỗi khi lưu vào database: " + ex.getMessage(), "Lỗi",
-							JOptionPane.ERROR_MESSAGE);
-					ex.printStackTrace();
-				} finally {
-					// Đóng các resource
-					try {
-						if (rs != null)
-							rs.close();
-						if (pstmt != null)
-							pstmt.close();
-						if (conn != null)
-							conn.close();
-					} catch (SQLException ex) {
-						ex.printStackTrace();
-					}
-				}
-			}
-		});
+		// Gắn sự kiện cho nút LƯU
+	    btnLuu.addActionListener(e -> saveGiangVien());
 
 		// Nút XUẤT
 		JButton btnXuat = new JButton("XUẤT");
@@ -283,12 +152,171 @@ public class GiangVien extends JPanel {
 		btnXuat.setBounds(561, 569, 120, 44);
 		add(btnXuat);
 
-		btnXuat.addActionListener(e -> {
-			// Lấy thông tin từ biến tạm
-			ThongTinGiangVien thongTin = new ThongTinGiangVien(tempHoTen, tempMaGV, tempEmail, tempSoDienThoai,
-					tempMonGiangDay, tempMaMon);
-			thongTin.setVisible(true);
-		});
+		// Gắn sự kiện cho nút XUẤT
+	    btnXuat.addActionListener(e -> Xuat());
+	}
+	
+	// Cập nhật mã môn dựa trên môn học được chọn
+	private void updateMaMon() {
+	    String selectedSubject = (String) comboBoxMonHoc.getSelectedItem();
+	    switch (selectedSubject) {
+	        case "Lập Trình Hướng Đối Tượng":
+	            txtMaMon.setText("TEL1448");
+	            break;
+	        case "Hệ Thống nhúng IOT":
+	            txtMaMon.setText("TEL1457");
+	            break;
+	        case "Hệ Thống Cảm Biến":
+	            txtMaMon.setText("TEL1467");
+	            break;
+	        case "Điện Toán Đám Mây":
+	            txtMaMon.setText("TEL1447");
+	            break;
+	        case "Phát Triển ứng Dụng":
+	            txtMaMon.setText("TEL1461");
+	            break;
+	        case "Tiếng Anh":
+	            txtMaMon.setText("BAS1160");
+	            break;
+	        default:
+	            txtMaMon.setText("");
+	            break;
+	    }
+	}
+
+	// Hàm xử lý sự kiện lưu thông tin giảng viên
+    private void saveGiangVien() {
+        // 1. Lấy dữ liệu từ các trường nhập liệu
+        String hoTen = HoTen_text.getText().trim();
+        String maGV = MaGV_text.getText().trim();
+        String email = Email_text.getText().trim();
+        String soDienThoai = txtSoDienThoai.getText().trim();
+        String monGiangDay = (String) comboBoxMonHoc.getSelectedItem();
+        String maMon = txtMaMon.getText().trim();
+
+        // 2. Kiểm tra các trường không được để trống
+        if (hoTen.isEmpty() || maGV.isEmpty() || email.isEmpty() || soDienThoai.isEmpty()
+                || monGiangDay == null || monGiangDay.isEmpty() || maMon.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ tất cả các thông tin!", "Lỗi",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // 3. Kiểm tra định dạng mã giảng viên
+        if (!MAGV_PATTERN.matcher(maGV).matches()) {
+            JOptionPane.showMessageDialog(this, "Mã giảng viên phải có định dạng GV + 3 số (VD: GV123)!", "Lỗi",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // 4. Kiểm tra định dạng email
+        if (!EMAIL_PATTERN.matcher(email).matches()) {
+            JOptionPane.showMessageDialog(this, "Email phải có định dạng hợp lệ (VD: ten@ptithcm.edu.vn)!", "Lỗi",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // 5. Kiểm tra định dạng số điện thoại
+        if (!PHONE_PATTERN.matcher(soDienThoai).matches()) {
+            JOptionPane.showMessageDialog(this, "Số điện thoại phải có 10 số và bắt đầu bằng 0!", "Lỗi",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // 6. Lưu vào database
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+
+            // Kiểm tra mã GV đã tồn tại
+            String checkMaGVSql = "SELECT ma_gv FROM giang_vien WHERE ma_gv = ?";
+            pstmt = conn.prepareStatement(checkMaGVSql);
+            pstmt.setString(1, maGV);
+            rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                JOptionPane.showMessageDialog(this, "Mã giảng viên '" + maGV + "' đã tồn tại trong database!", "Lỗi",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            rs.close();
+            pstmt.close();
+
+            // Kiểm tra xem mã môn đã được gán cho giảng viên khác chưa
+            String checkMonSql = "SELECT ma_gv FROM giang_vien WHERE ma_mon = ?";
+            pstmt = conn.prepareStatement(checkMonSql);
+            pstmt.setString(1, maMon);
+            rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                JOptionPane.showMessageDialog(this, "Môn học '" + monGiangDay + "' đã được gán cho giảng viên khác!",
+                        "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            rs.close();
+            pstmt.close();
+
+            // Câu lệnh SQL để insert
+            String insertSql = "INSERT INTO giang_vien (ho_ten, ma_gv, email, so_dien_thoai, mon_giang_day, ma_mon) "
+                    + "VALUES (?, ?, ?, ?, ?, ?)";
+
+            pstmt = conn.prepareStatement(insertSql);
+            pstmt.setString(1, hoTen);
+            pstmt.setString(2, maGV);
+            pstmt.setString(3, email);
+            pstmt.setString(4, soDienThoai);
+            pstmt.setString(5, monGiangDay);
+            pstmt.setString(6, maMon);
+
+            // Thực thi insert
+            int rowsAffected = pstmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                // Lưu vào biến tạm
+                tempHoTen = hoTen;
+                tempMaGV = maGV;
+                tempEmail = email;
+                tempSoDienThoai = soDienThoai;
+                tempMonGiangDay = monGiangDay;
+                tempMaMon = maMon;
+
+                JOptionPane.showMessageDialog(this, "Lưu thông tin thành công!", "Thành công",
+                        JOptionPane.INFORMATION_MESSAGE);
+
+                // Xóa dữ liệu trong các trường sau khi lưu
+                HoTen_text.setText("");
+                MaGV_text.setText("");
+                Email_text.setText("");
+                txtSoDienThoai.setText("");
+                comboBoxMonHoc.setSelectedIndex(0);
+                txtMaMon.setText("");
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Lỗi khi lưu vào database: " + ex.getMessage(), "Lỗi",
+                    JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+        } finally {
+            // Đóng các resource
+            try {
+                if (rs != null)
+                    rs.close();
+                if (pstmt != null)
+                    pstmt.close();
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+	// Xử lý sự kiện khi nhấn nút XUẤT
+	private void Xuat() {
+	    ThongTinGiangVien thongTin = new ThongTinGiangVien(tempHoTen, tempMaGV, tempEmail, tempSoDienThoai,
+	            tempMonGiangDay, tempMaMon);
+	    thongTin.setVisible(true);
 	}
 
 	// Tạo bảng giang_vien trong cơ sở dữ liệu nếu chưa tồn tại

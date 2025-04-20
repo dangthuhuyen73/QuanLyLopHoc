@@ -120,47 +120,30 @@ public class QuanLyGiangVien extends JPanel {
 		scrollPane.setBounds(25, 219, 848, 366);
 		add(scrollPane);
 
-		// Sự kiện cho nút Tìm Kiếm
-		btnTimKiem.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				timKiemGiangVien();
-			}
-		});
-
-		// Sự kiện cho nút Xóa
-		btnDelete.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				xoaGiangVien();
-			}
-		});
-
-		// Sự kiện cho nút Thêm
-		btnAdd.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// Create an instance of GiangVien panel
-				GiangVien giangVienPanel = new GiangVien();
-				giangVienPanel.setBounds(0, 0, 895, 652);
-				currentPanel.removeAll();
-				currentPanel.add(giangVienPanel);
-				currentPanel.revalidate();
-				currentPanel.repaint();
-			}
-		});
-
-		// Sự kiện cho nút Thông Tin Chi Tiết
-		btnTTGV.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				showLecturerDetails();
-			}
-		});
+		btnTimKiem.addActionListener(e -> timKiemGiangVien());
+        btnDelete.addActionListener(e -> xoaGiangVien());
+        btnAdd.addActionListener(e -> Add());
+        btnTTGV.addActionListener(e -> showLecturerDetails());
+        btnExport.addActionListener(e -> handleExportToExcel());
 
 		// Tải dữ liệu từ database
 		loadTableData();
 	}
+	
+    // Hàm xử lý sự kiện thêm
+    private void Add() {
+        GiangVien giangVienPanel = new GiangVien();
+        giangVienPanel.setBounds(0, 0, 895, 652);
+        currentPanel.removeAll();
+        currentPanel.add(giangVienPanel);
+        currentPanel.revalidate();
+        currentPanel.repaint();
+    }
+
+    // Hàm xử lý sự kiện xuất Excel
+    private void handleExportToExcel() {
+        exportToExcel();
+    }
 
 	private void loadTableData() {
 		Connection conn = null;

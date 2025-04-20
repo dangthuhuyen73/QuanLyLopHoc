@@ -617,4 +617,3 @@ public class BaiTap extends JFrame {
         new BaiTap().setVisible(true);
     }
 }
-
