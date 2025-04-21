@@ -392,7 +392,6 @@ public class SinhVien extends JPanel {
         }
     }
 
-    //Lưu thông tin sinh viên và các môn học
     private void saveToDatabase() {
         Connection conn = null;
         PreparedStatement pstmtStudent = null;
@@ -406,12 +405,11 @@ public class SinhVien extends JPanel {
 
             String mssv = Mssv_text.getText().trim();
 
-            // Kiểm tra MSSV tồn tại
-            String checkSql = "SELECT mssv FROM students WHERE mssv = ?";
-            pstmtCheck = conn.prepareStatement(checkSql);
+            // Kiểm tra MSSV đã tồn tại chưa
+            String checkMssvSql = "SELECT mssv FROM students WHERE mssv = ?";
+            pstmtCheck = conn.prepareStatement(checkMssvSql);
             pstmtCheck.setString(1, mssv);
             rs = pstmtCheck.executeQuery();
-
             if (rs.next()) {
                 JOptionPane.showMessageDialog(this, "MSSV đã tồn tại trong cơ sở dữ liệu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
                 conn.rollback();
@@ -423,17 +421,23 @@ public class SinhVien extends JPanel {
             pstmtStudent = conn.prepareStatement(sqlStudent);
             pstmtStudent.setString(1, mssv);
             pstmtStudent.setString(2, HoTen_text.getText().trim());
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            
             Date date = NgaySinh.getDate();
-            pstmtStudent.setDate(3, date != null ? new java.sql.Date(date.getTime()) : null);
+            if (date != null) {
+                pstmtStudent.setDate(3, new java.sql.Date(date.getTime()));
+            } else {
+                pstmtStudent.setNull(3, java.sql.Types.DATE);
+            }
+            
             pstmtStudent.setString(4, GioiTinh_ComboBox.getSelectedItem().toString());
             pstmtStudent.setString(5, Lop_ComboBox.getSelectedItem().toString());
             pstmtStudent.setString(6, Email_text.getText().trim());
             pstmtStudent.executeUpdate();
 
-            // Lưu thông tin khóa học
+            // Lưu thông tin môn học
             String sqlCourse = "INSERT INTO courses (mssv, monhoc, mamon, sotin, thoigian) VALUES (?, ?, ?, ?, ?)";
             pstmtCourse = conn.prepareStatement(sqlCourse);
+            
             List<String> selectedSubjects = new ArrayList<>();
             List<String> selectedMaMon = new ArrayList<>();
             List<String> selectedSoTin = new ArrayList<>();
@@ -457,12 +461,12 @@ public class SinhVien extends JPanel {
 
             // Lưu dữ liệu vào biến tạm
             SimpleDateFormat sdfDisplay = new SimpleDateFormat("dd/MM/yyyy");
-            String ngaySinh = date != null ? sdfDisplay.format(date) : "";
+    String ngaySinhDisplay = date != null ? sdfDisplay.format(date) : "";
             tempStudentInfo = new ThongTinSinhVien(
                     HoTen_text.getText().trim(),
                     mssv,
                     Lop_ComboBox.getSelectedItem().toString(),
-                    ngaySinh,
+                    ngaySinhDisplay,
                     GioiTinh_ComboBox.getSelectedItem().toString(),
                     Email_text.getText().trim(),
                     String.join(", ", selectedSubjects),
